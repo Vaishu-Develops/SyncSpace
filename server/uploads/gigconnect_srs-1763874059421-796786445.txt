@@ -1,0 +1,1024 @@
+# SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+
+## GigConnect - Hyperlocal Freelance Marketplace
+
+---
+
+**Document Version:** 1.0  
+**Date:** November 7, 2025  
+**Project Type:** MERN Stack Web Application  
+**Prepared By:** Development Team  
+**Status:** Final Draft
+
+---
+
+# TABLE OF CONTENTS
+
+1. [INTRODUCTION](#1-introduction)
+2. [OVERALL DESCRIPTION](#2-overall-description)
+3. [SPECIFIC REQUIREMENTS](#3-specific-requirements)
+4. [SYSTEM FEATURES](#4-system-features)
+5. [EXTERNAL INTERFACE REQUIREMENTS](#5-external-interface-requirements)
+6. [NON-FUNCTIONAL REQUIREMENTS](#6-non-functional-requirements)
+7. [DATABASE REQUIREMENTS](#7-database-requirements)
+8. [API SPECIFICATIONS](#8-api-specifications)
+9. [SECURITY REQUIREMENTS](#9-security-requirements)
+10. [APPENDICES](#10-appendices)
+
+---
+
+# 1. INTRODUCTION
+
+## 1.1 Purpose
+
+This Software Requirements Specification (SRS) document provides a comprehensive description of the **GigConnect** platform - a hyperlocal freelance marketplace connecting clients with skilled freelancers within their geographical proximity.
+
+**Intended Audience:**
+- Software Developers
+- Quality Assurance Engineers
+- Project Managers
+- UI/UX Designers
+- System Architects
+- Stakeholders and Investors
+
+## 1.2 Document Conventions
+
+- **SHALL/MUST:** Indicates mandatory requirement
+- **SHOULD:** Indicates recommended requirement
+- **MAY:** Indicates optional requirement
+- **High Priority:** Critical for MVP (Minimum Viable Product)
+- **Medium Priority:** Important but can be deferred
+- **Low Priority:** Nice-to-have features
+
+## 1.3 Project Scope
+
+### Product Name
+**GigConnect** - Hyperlocal Freelance Marketplace
+
+### Product Vision
+To create a streamlined platform that connects local communities with skilled freelancers, enabling clients to easily find and hire local talent while providing freelancers with opportunities to showcase their skills and find nearby work.
+
+### Key Objectives
+1. Enable clients to post detailed job listings (gigs) with specific requirements
+2. Allow freelancers to create comprehensive profiles showcasing skills and portfolios
+3. Provide hyperlocal search with location-based filtering (radius search)
+4. Facilitate real-time communication between clients and freelancers
+5. Ensure secure payment processing with milestone support
+6. Build trust through a two-way review and rating system
+
+### In Scope
+✅ User registration and authentication (Client/Freelancer roles)  
+✅ Profile management with portfolio support  
+✅ Gig posting and management  
+✅ Application/proposal system  
+✅ Real-time messaging with Socket.io  
+✅ Payment integration (Razorpay/Stripe)  
+✅ Review and rating system  
+✅ Admin dashboard for platform management  
+✅ Responsive web interface (mobile-first)  
+
+### Out of Scope (Future Releases)
+❌ Native mobile applications (iOS/Android)  
+❌ Video calling integration  
+❌ Multi-language support  
+❌ AI-powered skill matching  
+❌ Escrow service  
+❌ Freelancer certification programs  
+
+## 1.4 Definitions, Acronyms, and Abbreviations
+
+| Term | Definition |
+|------|------------|
+| API | Application Programming Interface |
+| Client | User who posts gigs and hires freelancers |
+| Freelancer | User who offers services and applies to gigs |
+| Gig | A job posting created by a client |
+| JWT | JSON Web Token for authentication |
+| MERN | MongoDB, Express.js, React.js, Node.js |
+| MVP | Minimum Viable Product |
+| Proposal | Application submitted by freelancer for a gig |
+| SPA | Single Page Application |
+| SRS | Software Requirements Specification |
+| UI/UX | User Interface / User Experience |
+
+## 1.5 References
+
+- MERN Stack Documentation
+- Razorpay Payment Gateway API Documentation
+- Socket.io Real-time Communication Documentation
+- React.js Official Documentation
+- MongoDB Database Documentation
+- Express.js Framework Documentation
+- Node.js Platform Documentation
+
+---
+
+# 2. OVERALL DESCRIPTION
+
+## 2.1 Product Perspective
+
+GigConnect is a standalone web application that operates as a two-sided marketplace platform. It integrates with external services for payments, geolocation, and cloud storage.
+
+### System Context Diagram
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   GigConnect Platform                │
+│  ┌──────────────┐  ┌──────────────┐  ┌───────────┐ │
+│  │   Frontend   │  │   Backend    │  │  Database │ │
+│  │  (React.js)  │◄─┤ (Node.js +   │◄─┤ (MongoDB) │ │
+│  │              │  │  Express.js) │  │           │ │
+│  └──────────────┘  └──────────────┘  └───────────┘ │
+└─────────────────────────────────────────────────────┘
+         ▲                   ▲
+         │                   │
+         │         ┌─────────┴──────────┐
+         │         │                    │
+    ┌────┴────┐   ┌▼─────────┐  ┌──────▼──────┐
+    │  Users  │   │ Razorpay │  │ Cloudinary  │
+    │(Browser)│   │ Payment  │  │   (Image    │
+    └─────────┘   │ Gateway  │  │   Storage)  │
+                  └──────────┘  └─────────────┘
+```
+
+### System Interfaces
+
+**1. Frontend Interface:**
+- React.js SPA communicates with backend via REST APIs
+- WebSocket connection for real-time features
+
+**2. Backend Services:**
+- RESTful API server (Node.js + Express.js)
+- Socket.io server for real-time messaging
+- Authentication middleware (JWT)
+
+**3. External Services:**
+- **Payment Gateway:** Razorpay/Stripe API
+- **Cloud Storage:** Cloudinary for images
+- **Maps API:** Google Maps / Mapbox for location services
+
+**4. Database:**
+- MongoDB (NoSQL) for data persistence
+
+## 2.2 Product Functions
+
+### Primary Functions
+
+**For Clients:**
+1. Register and create account with "Client" role
+2. Post gigs with detailed requirements
+3. Browse and search freelancer profiles
+4. Review proposals from applicants
+5. Message freelancers in real-time
+6. Hire freelancers for projects
+7. Monitor project progress
+8. Release payments securely
+9. Leave reviews and ratings
+
+**For Freelancers:**
+1. Register and create account with "Freelancer" role
+2. Build comprehensive profile with portfolio
+3. Browse available gigs with location filters
+4. Submit proposals/applications
+5. Communicate with clients
+6. Deliver work and upload files
+7. Receive payments
+8. Build reputation through reviews
+
+**For Administrators:**
+1. Monitor platform activity
+2. Manage users (view, suspend, delete)
+3. Moderate gigs and content
+4. Handle disputes and reports
+5. View analytics and insights
+6. Generate platform reports
+
+## 2.3 User Classes and Characteristics
+
+### User Class 1: Clients
+
+**Description:** Individuals or businesses seeking to hire freelancers for specific tasks.
+
+**Characteristics:**
+- Age: 25-55 years
+- Technical Proficiency: Basic to Intermediate
+- Frequency of Use: Occasional to Regular
+- Primary Goal: Find reliable local talent quickly
+
+**Needs:**
+- Easy gig posting process
+- Access to qualified freelancers
+- Transparent pricing
+- Secure payment methods
+- Quality assurance through reviews
+
+### User Class 2: Freelancers
+
+**Description:** Skilled professionals offering services in various categories.
+
+**Characteristics:**
+- Age: 20-50 years
+- Technical Proficiency: Intermediate to Advanced
+- Frequency of Use: Daily to Regular
+- Primary Goal: Find consistent work opportunities
+
+**Needs:**
+- Profile showcase capabilities
+- Access to relevant gigs
+- Fair pricing control
+- Fast payment processing
+- Reputation building tools
+
+### User Class 3: Administrators
+
+**Description:** Platform managers responsible for operations and moderation.
+
+**Characteristics:**
+- Age: 25-45 years
+- Technical Proficiency: Advanced
+- Frequency of Use: Daily
+- Primary Goal: Ensure platform health and growth
+
+**Needs:**
+- Comprehensive dashboard
+- User management tools
+- Analytics and reporting
+- Content moderation features
+- Dispute resolution tools
+
+## 2.4 Operating Environment
+
+### Client-Side Requirements
+- **Browser Compatibility:**
+  - Google Chrome 90+
+  - Mozilla Firefox 88+
+  - Safari 14+
+  - Microsoft Edge 90+
+- **Screen Resolutions:** 320px to 4K (responsive)
+- **Internet Connection:** Broadband (minimum 2 Mbps)
+- **JavaScript:** Must be enabled
+
+### Server-Side Requirements
+- **Operating System:** Linux (Ubuntu 20.04 LTS) / Windows Server
+- **Node.js Version:** 16.x or higher
+- **Database:** MongoDB 5.0+
+- **Memory:** Minimum 4GB RAM
+- **Storage:** Minimum 50GB SSD
+- **Network:** Stable internet connection with fixed IP
+
+### Third-Party Services
+- Razorpay/Stripe API access
+- Cloudinary account for media storage
+- Google Maps API key (or Mapbox)
+- SMTP server for email notifications
+
+## 2.5 Design and Implementation Constraints
+
+### Technical Constraints
+1. **Technology Stack:** Must use MERN stack (MongoDB, Express.js, React.js, Node.js)
+2. **Browser Storage:** Cannot use localStorage/sessionStorage in Claude artifacts
+3. **Real-time Communication:** Must use Socket.io for messaging
+4. **Payment Gateway:** Limited to Razorpay (India) or Stripe (International)
+
+### Business Constraints
+1. **Timeline:** 4-week development cycle
+2. **Budget:** Limited to open-source and free-tier services
+3. **Platform Fee:** 5% commission on successful transactions
+4. **Compliance:** Must adhere to data protection regulations
+
+### Regulatory Constraints
+1. **Data Privacy:** GDPR compliance for EU users
+2. **Payment Security:** PCI DSS compliance
+3. **User Data:** Must provide data export/deletion options
+4. **Age Restriction:** Users must be 18+ years old
+
+## 2.6 Assumptions and Dependencies
+
+### Assumptions
+1. Users have basic computer literacy
+2. Users have valid email addresses
+3. Clients have means to make online payments
+4. Freelancers have skills they claim to possess
+5. Internet connectivity is stable during usage
+6. Users will provide accurate profile information
+
+### Dependencies
+1. **MongoDB Atlas:** Database availability and performance
+2. **Razorpay/Stripe:** Payment gateway uptime and API stability
+3. **Cloudinary:** Image storage and CDN availability
+4. **Node.js Ecosystem:** NPM package availability
+5. **Third-party Libraries:** Continued maintenance and security updates
+6. **Browser Standards:** Consistent implementation of web standards
+
+---
+
+# 3. SPECIFIC REQUIREMENTS
+
+## 3.1 Functional Requirements
+
+### 3.1.1 User Management
+
+#### FR-UM-001: User Registration
+**Priority:** High  
+**Description:** System shall allow users to register with email and password.
+
+**Requirements:**
+- System SHALL accept name, email, password, and role (Client/Freelancer)
+- Email MUST be unique in the system
+- Password MUST be minimum 6 characters
+- System SHALL validate email format
+- System SHALL hash passwords before storage (bcrypt)
+- System SHALL send verification email upon registration
+- System SHALL generate and return JWT token upon successful registration
+
+**API Endpoint:** POST `/api/users/register`
+
+**Input Validation:**
+- Name: Required, 2-50 characters
+- Email: Required, valid format
+- Password: Required, min 6 characters
+- Role: Required, enum ['client', 'freelancer']
+
+**Success Criteria:**
+- User record created in database
+- JWT token generated and returned
+- Password stored as hash
+- User redirected to profile setup
+
+#### FR-UM-002: User Login
+**Priority:** High  
+**Description:** System shall authenticate users with email and password.
+
+**Requirements:**
+- System SHALL accept email and password
+- System SHALL validate credentials against database
+- System SHALL compare hashed passwords
+- System SHALL generate JWT token on successful login
+- System SHALL return user details (excluding password)
+- System SHALL handle invalid credentials gracefully
+
+**API Endpoint:** POST `/api/users/login`
+
+**Success Criteria:**
+- Valid users can login successfully
+- Invalid credentials return appropriate error
+- JWT token valid for 30 days
+- Token contains user ID and role
+
+#### FR-UM-003: Profile Management
+**Priority:** High  
+**Description:** System shall allow users to view and update their profiles.
+
+**Requirements:**
+- System SHALL display current profile information
+- System SHALL allow updating: name, email, bio, skills, location, phone
+- System SHALL allow profile photo upload (max 5MB)
+- Freelancers SHALL be able to add portfolio items
+- System SHALL validate all inputs before saving
+- System SHALL require authentication (JWT) for profile operations
+
+**API Endpoints:**
+- GET `/api/users/profile` - View own profile
+- PUT `/api/users/profile` - Update profile
+
+**Success Criteria:**
+- Users can view their complete profile
+- Updates are saved and reflected immediately
+- Images uploaded to Cloudinary successfully
+- Invalid data rejected with clear error messages
+
+#### FR-UM-004: Public Profile View
+**Priority:** Medium  
+**Description:** System shall display public profiles of other users.
+
+**Requirements:**
+- System SHALL display user's public information
+- System SHALL show portfolio for freelancers
+- System SHALL display reviews and ratings
+- System SHALL hide sensitive information (email, phone until hired)
+- System SHALL show availability status
+- System SHALL provide "Message" button for communication
+
+**Success Criteria:**
+- Public profiles accessible via URL
+- Only approved information visible
+- Reviews display correctly with ratings
+- Portfolio images load properly
+
+### 3.1.2 Gig Management
+
+#### FR-GM-001: Create Gig
+**Priority:** High  
+**Description:** Clients shall be able to post new gigs.
+
+**Requirements:**
+- System SHALL allow only clients to create gigs
+- System SHALL require: title, description, budget, category, location, skills
+- Title MUST be 10-100 characters
+- Description MUST be minimum 50 characters
+- Budget MUST be positive number
+- System SHALL auto-assign client ID from JWT
+- System SHALL set initial status as "open"
+- System SHALL timestamp creation
+
+**API Endpoint:** POST `/api/gigs`
+
+**Input Validation:**
+- Title: Required, 10-100 chars
+- Description: Required, min 50 chars
+- Budget: Required, number, min 100
+- Category: Required, string
+- Location: Required, string
+- SkillsRequired: Array of strings
+
+**Success Criteria:**
+- Gig created with unique ID
+- All required fields saved
+- Client can view gig in their list
+- Gig appears in public browse
+
+#### FR-GM-002: Browse Gigs
+**Priority:** High  
+**Description:** System shall display all available gigs with filtering.
+
+**Requirements:**
+- System SHALL list all gigs with status "open"
+- System SHALL support filters: keyword, location, budget range, category
+- System SHALL display: title, description preview, budget, location, client name, skills
+- System SHALL implement pagination (20 gigs per page)
+- System SHALL sort by: relevance, latest, budget (high/low)
+- System SHALL show application count for each gig
+
+**API Endpoint:** GET `/api/gigs`
+
+**Query Parameters:**
+- keyword: String (searches title + description)
+- location: String
+- minBudget: Number
+- maxBudget: Number
+- category: String
+- page: Number
+- limit: Number
+
+**Success Criteria:**
+- Gigs load within 2 seconds
+- Filters work correctly
+- Pagination functions properly
+- Sorting changes order as expected
+
+#### FR-GM-003: View Gig Details
+**Priority:** High  
+**Description:** System shall display complete gig information.
+
+**Requirements:**
+- System SHALL display all gig fields
+- System SHALL show client profile information
+- System SHALL display list of required skills
+- System SHALL show location on map
+- System SHALL display application count
+- System SHALL show "Apply" button for freelancers
+- System SHALL show "Edit" button for gig owner
+
+**API Endpoint:** GET `/api/gigs/:id`
+
+**Success Criteria:**
+- All gig details visible
+- Map loads with correct location marker
+- Appropriate actions available based on user role
+- Client information displayed correctly
+
+#### FR-GM-004: Update Gig
+**Priority:** Medium  
+**Description:** Clients shall be able to update their posted gigs.
+
+**Requirements:**
+- System SHALL allow only gig owner to update
+- System SHALL allow editing: title, description, budget, location, skills, status
+- System SHALL validate user ownership via JWT
+- System SHALL not allow status change to "completed" unless payment made
+- System SHALL timestamp last update
+
+**API Endpoint:** PUT `/api/gigs/:id`
+
+**Success Criteria:**
+- Only owner can update
+- Changes saved successfully
+- Updated timestamp reflects change
+- Other users see updated information
+
+#### FR-GM-005: Delete Gig
+**Priority:** Medium  
+**Description:** Gig owners and admins shall be able to delete gigs.
+
+**Requirements:**
+- System SHALL allow gig owner to delete own gigs
+- System SHALL allow admins to delete any gig
+- System SHALL not allow deletion if gig status is "in-progress"
+- System SHALL cascade delete associated messages/applications
+- System SHALL require confirmation before deletion
+
+**API Endpoints:**
+- DELETE `/api/gigs/:id` (Owner)
+- DELETE `/api/admin/gigs/:id` (Admin)
+
+**Success Criteria:**
+- Gig removed from database
+- Associated data cleaned up
+- Error if gig is in-progress
+- Confirmation required before delete
+
+### 3.1.3 Application/Proposal System
+
+#### FR-AP-001: Submit Application
+**Priority:** High  
+**Description:** Freelancers shall be able to apply to gigs.
+
+**Requirements:**
+- System SHALL allow only freelancers to apply
+- System SHALL create message with type "application"
+- Application MUST include: cover letter, bid amount, timeline estimate
+- System SHALL prevent duplicate applications to same gig
+- System SHALL notify client in real-time
+- System SHALL link application to freelancer profile
+
+**Implementation:** POST `/api/messages` with messageType: "application"
+
+**Input Requirements:**
+- chatId: Format `application_${gigId}_${freelancerId}`
+- content: Cover letter (min 100 characters)
+- metadata: { proposedBudget, estimatedDays, portfolioLinks }
+
+**Success Criteria:**
+- Application saved successfully
+- Client receives notification
+- Application appears in freelancer's applications list
+- Cannot apply twice to same gig
+
+#### FR-AP-002: View Applications
+**Priority:** High  
+**Description:** Clients shall view all applications for their gigs.
+
+**Requirements:**
+- System SHALL list all applications for specific gig
+- System SHALL display: freelancer name, avatar, rating, proposal, bid
+- System SHALL provide "View Profile" and "Message" actions
+- System SHALL show application submission time
+- System SHALL sort by: latest, lowest bid, highest rating
+
+**Implementation:** GET `/api/messages?gigId=${gigId}&messageType=application`
+
+**Success Criteria:**
+- All applications visible to gig owner
+- Freelancer details displayed correctly
+- Actions (view profile, message) work properly
+- Applications sorted as requested
+
+#### FR-AP-003: Track Application Status
+**Priority:** Medium  
+**Description:** Freelancers shall track their application statuses.
+
+**Requirements:**
+- System SHALL display all applications submitted by freelancer
+- System SHALL show status: Pending, Viewed, Shortlisted, Hired, Rejected
+- System SHALL update status in real-time via Socket.io
+- System SHALL show gig details for each application
+- System SHALL allow withdrawing application (if not hired)
+
+**Success Criteria:**
+- Freelancer sees all applications in one place
+- Status updates reflect immediately
+- Can withdraw pending applications
+- Cannot withdraw after being hired
+
+### 3.1.4 Messaging System
+
+#### FR-MS-001: Send Message
+**Priority:** High  
+**Description:** Users shall send text messages to each other.
+
+**Requirements:**
+- System SHALL create chat between two users with unique chatId
+- System SHALL accept text content (max 5000 characters)
+- System SHALL timestamp each message
+- System SHALL identify sender via JWT
+- System SHALL emit message via Socket.io for real-time delivery
+- System SHALL support message types: text, file, application
+
+**API Endpoint:** POST `/api/messages`
+
+**Input:**
+```json
+{
+  "chatId": "string",
+  "content": "string",
+  "messageType": "text|file|application",
+  "fileUrl": "string (optional)",
+  "fileName": "string (optional)",
+  "fileSize": "number (optional)"
+}
+```
+
+**Success Criteria:**
+- Message saved to database
+- Real-time delivery via Socket.io
+- Sender and receiver see message immediately
+- Timestamp accurate
+
+#### FR-MS-002: Retrieve Messages
+**Priority:** High  
+**Description:** System shall retrieve message history for a chat.
+
+**Requirements:**
+- System SHALL return all messages for given chatId
+- System SHALL paginate results (50 messages per page)
+- System SHALL sort by timestamp (oldest first)
+- System SHALL include sender details (name, avatar)
+- System SHALL mark messages as read when retrieved
+- System SHALL indicate read status
+
+**API Endpoint:** GET `/api/messages/:chatId`
+
+**Query Parameters:**
+- page: Number (default 1)
+- limit: Number (default 50)
+
+**Response:**
+```json
+{
+  "success": true,
+  "messages": [
+    {
+      "_id": "string",
+      "chatId": "string",
+      "sender": {
+        "_id": "string",
+        "name": "string",
+        "email": "string"
+      },
+      "content": "string",
+      "messageType": "string",
+      "isRead": "boolean",
+      "createdAt": "date"
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 5,
+    "totalMessages": 234,
+    "hasNext": true,
+    "hasPrev": false
+  }
+}
+```
+
+**Success Criteria:**
+- Messages load in chronological order
+- Pagination works correctly
+- Sender details populate properly
+- Read status updates accurately
+
+#### FR-MS-003: Real-time Messaging
+**Priority:** High  
+**Description:** System shall deliver messages in real-time using Socket.io.
+
+**Requirements:**
+- System SHALL establish WebSocket connection on page load
+- System SHALL emit 'join-chat' event when user enters chat
+- System SHALL broadcast new messages to chat participants
+- System SHALL emit typing indicators
+- System SHALL handle connection/disconnection gracefully
+- System SHALL reconnect automatically on disconnection
+
+**Socket.io Events:**
+- `join-chat(chatId)` - User joins chat room
+- `leave-chat(chatId)` - User leaves chat room
+- `new-message(messageData)` - Broadcast new message
+- `typing(data)` - User is typing
+- `stop-typing(data)` - User stopped typing
+
+**Success Criteria:**
+- Messages appear instantly for both users
+- Typing indicators work correctly
+- No message loss during transmission
+- Reconnection maintains chat state
+
+#### FR-MS-004: File Sharing
+**Priority:** Medium  
+**Description:** Users shall share files in messages.
+
+**Requirements:**
+- System SHALL support file types: images (jpg, png), documents (pdf, docx), archives (zip)
+- System SHALL limit file size to 10MB
+- System SHALL upload files to Cloudinary
+- System SHALL create message with file metadata
+- System SHALL provide download link for receiver
+- System SHALL show file preview for images
+
+**Implementation:**
+1. Upload file to Cloudinary (separate endpoint)
+2. POST `/api/messages` with fileUrl, fileName, fileSize
+
+**Success Criteria:**
+- Files upload successfully
+- Download links work properly
+- Image previews display correctly
+- File metadata saved accurately
+
+#### FR-MS-005: Mark Messages as Read
+**Priority:** Medium  
+**Description:** System shall track message read status.
+
+**Requirements:**
+- System SHALL mark messages as read when viewed
+- System SHALL update isRead field in database
+- System SHALL add user to readBy array
+- System SHALL show read receipts (checkmarks)
+- System SHALL update unread count in conversations list
+
+**API Endpoint:** PUT `/api/messages/mark-read`
+
+**Input:**
+```json
+{
+  "messageIds": ["array of message IDs"],
+  "chatId": "string"
+}
+```
+
+**Success Criteria:**
+- Messages marked as read successfully
+- Read receipts appear for sender
+- Unread count decreases
+- Batch update efficient
+
+### 3.1.5 Payment System
+
+#### FR-PS-001: Create Payment Order
+**Priority:** High  
+**Description:** System shall initiate payment process for completed gigs.
+
+**Requirements:**
+- System SHALL create Razorpay/Stripe order
+- System SHALL calculate total: gig budget + platform fee (5%)
+- System SHALL validate gig exists and is in correct status
+- System SHALL create payment record in database
+- System SHALL return order details to frontend
+- System SHALL set currency based on region (INR/USD)
+
+**API Endpoint:** POST `/api/payments/create-order`
+
+**Input:**
+```json
+{
+  "gigId": "string",
+  "amount": "number"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "order": {
+    "id": "order_xyz123",
+    "amount": 5000000,
+    "currency": "INR",
+    "receipt": "receipt_xyz"
+  },
+  "payment": {
+    "id": "payment_abc",
+    "gigTitle": "Website Development"
+  }
+}
+```
+
+**Success Criteria:**
+- Order created in Razorpay/Stripe
+- Payment record saved with status "pending"
+- Order details returned correctly
+- Amount calculation accurate (includes 5% fee)
+
+#### FR-PS-002: Verify Payment
+**Priority:** High  
+**Description:** System shall verify payment completion.
+
+**Requirements:**
+- System SHALL receive Razorpay/Stripe response from frontend
+- System SHALL verify payment signature using webhook secret
+- System SHALL update payment status to "completed"
+- System SHALL update gig status to "completed"
+- System SHALL credit freelancer's wallet
+- System SHALL notify both parties
+- System SHALL handle failed verification
+
+**API Endpoint:** POST `/api/payments/verify`
+
+**Input:**
+```json
+{
+  "razorpay_order_id": "string",
+  "razorpay_payment_id": "string",
+  "razorpay_signature": "string"
+}
+```
+
+**Success Criteria:**
+- Signature verification successful
+- Payment status updated to "completed"
+- Gig marked as completed
+- Freelancer balance increased
+- Notifications sent to both users
+
+#### FR-PS-003: Payment History
+**Priority:** Medium  
+**Description:** Users shall view their payment transactions.
+
+**Requirements:**
+- System SHALL display all payments for authenticated user
+- Clients SHALL see payments made
+- Freelancers SHALL see payments received
+- System SHALL show: date, gig title, amount, status
+- System SHALL allow filtering by date range and status
+- System SHALL provide download invoice option
+
+**API Endpoint:** GET `/api/payments/user/my-payments`
+
+**Success Criteria:**
+- All transactions visible to user
+- Correct amounts displayed
+- Filtering works properly
+- Download invoice generates PDF
+
+#### FR-PS-004: Payment Details
+**Priority:** Medium  
+**Description:** System shall display individual payment details.
+
+**Requirements:**
+- System SHALL show complete payment information
+- System SHALL display: order ID, payment ID, amount, date, status, gig details
+- System SHALL allow downloading receipt
+- System SHALL show transaction breakdown (gig cost + platform fee)
+
+**API Endpoint:** GET `/api/payments/:orderId`
+
+**Success Criteria:**
+- All payment details visible
+- Receipt downloadable
+- Breakdown accurate
+- Correct parties identified
+
+### 3.1.6 Review and Rating System
+
+#### FR-RR-001: Submit Review
+**Priority:** High  
+**Description:** Clients shall rate and review freelancers after gig completion.
+
+**Requirements:**
+- System SHALL allow review only after payment completion
+- System SHALL require rating (1-5 stars) and comment (min 50 chars)
+- System SHALL prevent duplicate reviews for same gig
+- System SHALL link review to specific gig and freelancer
+- System SHALL timestamp review submission
+- System SHALL notify freelancer of new review
+
+**API Endpoint:** POST `/api/reviews`
+
+**Input:**
+```json
+{
+  "gigId": "string",
+  "freelancerId": "string",
+  "rating": "number (1-5)",
+  "comment": "string (min 50 chars)"
+}
+```
+
+**Success Criteria:**
+- Review saved successfully
+- Cannot submit duplicate for same gig
+- Freelancer notified immediately
+- Rating appears on freelancer profile
+
+#### FR-RR-002: View Reviews
+**Priority:** High  
+**Description:** System shall display all reviews for a freelancer.
+
+**Requirements:**
+- System SHALL list all reviews for given freelancer ID
+- System SHALL calculate average rating
+- System SHALL show review breakdown (5-star %, 4-star %, etc.)
+- System SHALL display: client name, rating, comment, date, gig title
+- System SHALL sort by: most recent, highest rating, lowest rating
+- System SHALL paginate results (10 reviews per page)
+
+**API Endpoint:** GET `/api/reviews/:freelancerId`
+
+**Success Criteria:**
+- All reviews visible
+- Average rating calculated correctly
+- Breakdown percentages accurate
+- Sorting and pagination work properly
+
+#### FR-RR-003: Review Authenticity
+**Priority:** Medium  
+**Description:** System shall ensure review authenticity.
+
+**Requirements:**
+- System SHALL verify client paid for gig before allowing review
+- System SHALL prevent review editing after submission
+- System SHALL allow review reporting for inappropriate content
+- System SHALL display "Verified Purchase" badge on reviews
+
+**Success Criteria:**
+- Only actual clients can review
+- Reviews immutable after submission
+- Inappropriate reviews can be reported
+- Verified badge displays correctly
+
+### 3.1.7 Admin Functions
+
+#### FR-AD-001: User Management
+**Priority:** Medium  
+**Description:** Admins shall manage all platform users.
+
+**Requirements:**
+- System SHALL display all registered users
+- System SHALL allow filtering by role, status, registration date
+- System SHALL allow viewing user details
+- System SHALL allow suspending user accounts
+- System SHALL allow deleting users (with confirmation)
+- System SHALL log all admin actions
+
+**API Endpoints:**
+- GET `/api/admin/users` - List all users
+- DELETE `/api/admin/users/:id` - Delete user
+
+**Success Criteria:**
+- All users visible to admin
+- Filters work correctly
+- Suspend/delete functions work
+- Actions logged for audit
+
+#### FR-AD-002: Gig Management
+**Priority:** Medium  
+**Description:** Admins shall manage all gigs on platform.
+
+**Requirements:**
+- System SHALL display all gigs regardless of status
+- System SHALL allow filtering by status, category, date
+- System SHALL allow viewing gig details and applications
+- System SHALL allow deleting inappropriate gigs
+- System SHALL allow featuring gigs on homepage
+
+**API Endpoints:**
+- GET `/api/admin/gigs` - List all gigs
+- DELETE `/api/admin/gigs/:id` - Delete gig
+
+**Success Criteria:**
+- All gigs visible to admin
+- Can delete inappropriate content
+- Featured gigs appear on homepage
+- Deletions logged
+
+#### FR-AD-003: Platform Analytics
+**Priority:** Low  
+**Description:** Admins shall view platform statistics and insights.
+
+**Requirements:**
+- System SHALL display key metrics: total users, active gigs, revenue
+- System SHALL show growth charts (daily/weekly/monthly)
+- System SHALL display category-wise distribution
+- System SHALL show user retention metrics
+- System SHALL allow exporting reports as PDF/CSV
+
+**Success Criteria:**
+- Dashboard loads within 3 seconds
+- Metrics accurate and real-time
+- Charts render correctly
+- Export functions work
+
+---
+
+# 4. SYSTEM FEATURES
+
+## 4.1 Feature: Hyperlocal Search
+
+**Description:** Users can find gigs/freelancers within specific geographical radius.
+
+**Priority:** High
+
+**Functional Requirements:**
+
+**FR-HL-001:** System shall accept location input (city, address, or GPS coordinates)
+
+**FR-HL-002:** System shall allow radius selection (1km, 5km, 10km, 25km, 50km)
+
+**FR-HL-003:** System shall calculate distance between user and gig/freelancer
+
+**FR-HL-004:** System shall filter results based on selected radius
+
+**FR-HL-005:** System shall display distance in results ("2.3 km away")
+
+**FR-HL-006:** System shall show results on map view with markers
+
+**
