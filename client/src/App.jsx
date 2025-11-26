@@ -1,0 +1,212 @@
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useOutletContext, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Lazy load components
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/EnhancedDashboard'));
+const WorkspaceLayout = lazy(() => import('./components/WorkspaceLayout'));
+const Board = lazy(() => import('./components/Board'));
+const DocumentEditor = lazy(() => import('./components/DocumentEditor'));
+const WorkspaceSettings = lazy(() => import('./pages/WorkspaceSettings'));
+const WorkspacesPage = lazy(() => import('./pages/WorkspacesPage'));
+const TeamsPage = lazy(() => import('./pages/TeamsPage'));
+const ProjectPage = lazy(() => import('./pages/ProjectPage'));
+const TasksPage = lazy(() => import('./pages/TasksPage'));
+const WorkspaceOverview = lazy(() => import('./components/Workspace/WorkspaceOverview'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const FilesPage = lazy(() => import('./pages/FilesPage'));
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage'));
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const ChatPanel = lazy(() => import('./components/Chat/ChatPanel'));
+const FileManager = lazy(() => import('./components/Files/FileManager'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+
+// Loading Component
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-gray-400 animate-pulse">Loading SyncSpace...</p>
+    </div>
+  </div>
+);
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
+// Public Route Component (redirects to dashboard if logged in)
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+const ChatViewWrapper = () => {
+  const { workspaceId } = useOutletContext();
+  return <ChatPanel workspaceId={workspaceId} />;
+};
+
+const FilesViewWrapper = () => {
+  const { workspaceId } = useOutletContext();
+  return <FileManager workspaceId={workspaceId} />;
+};
+
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={
+              <PublicRoute>
+                <LandingPage />
+              </PublicRoute>
+            } />
+            <Route path="/login" element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } />
+            <Route path="/register" element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            } />
+
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/project/:projectId" element={
+              <ProtectedRoute>
+                <ProjectPage />
+              </ProtectedRoute>
+            } />
+            <Route
+              path="/workspaces"
+              element={
+                <ProtectedRoute>
+                  <WorkspacesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teams"
+              element={
+                <ProtectedRoute>
+                  <TeamsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <TasksPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/files"
+              element={
+                <ProtectedRoute>
+                  <FilesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/favorites"
+              element={
+                <ProtectedRoute>
+                  <FavoritesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <CalendarPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workspace/:workspaceId"
+              element={
+                <ProtectedRoute>
+                  <WorkspaceLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<WorkspaceOverview />} />
+              <Route path="board" element={<Board />} />
+              <Route path="docs" element={<DocumentEditor />} />
+              <Route path="chat" element={<ChatViewWrapper />} />
+              <Route path="files" element={<FilesViewWrapper />} />
+              <Route path="settings" element={<WorkspaceSettings />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
