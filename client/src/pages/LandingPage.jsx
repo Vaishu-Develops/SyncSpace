@@ -7,9 +7,9 @@ const LandingPage = () => {
         <div className="min-h-screen bg-slate-950 text-white overflow-hidden selection:bg-primary/30 selection:text-primary-foreground">
             {/* Background Effects */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse-slow"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse-slow delay-1000"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/10 rounded-full blur-[128px]"></div>
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-violet-500/10 rounded-full blur-3xl"></div>
                 <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
             </div>
 
@@ -42,12 +42,12 @@ const LandingPage = () => {
             {/* Hero Section */}
             <section className="relative z-10 pt-20 pb-32 lg:pt-32 lg:pb-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in-up">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
                         <span className="flex h-2 w-2 rounded-full bg-primary"></span>
                         <span className="text-sm font-medium text-gray-300">v2.0 is now live</span>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500 animate-fade-in-up delay-100">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500 animate-fade-in">
                         Collaborate in the <br />
                         <span className="text-primary">Future of Work</span>
                     </h1>
@@ -62,33 +62,104 @@ const LandingPage = () => {
                                 Start for Free <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
-                        <Link to="/demo">
-                            <Button variant="secondary" size="lg" className="w-full sm:w-auto min-w-[160px] bg-white/5 border-white/10 hover:bg-white/10">
-                                Watch Demo
+                        <a href="#features" className="w-full sm:w-auto">
+                            <Button variant="secondary" size="lg" className="w-full min-w-[160px] bg-white/5 border-white/10 hover:bg-white/10 backdrop-blur-sm">
+                                Explore Features
                             </Button>
-                        </Link>
+                        </a>
                     </div>
 
                     {/* Hero Image / Dashboard Preview */}
-                    <div className="mt-20 relative mx-auto max-w-5xl animate-fade-in-up delay-500">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-30"></div>
-                        <div className="relative rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-xl overflow-hidden shadow-2xl">
-                            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                            <img
-                                src="/dashboard-preview.png"
-                                alt="SyncSpace Dashboard"
-                                className="w-full rounded-2xl opacity-90"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = 'https://placehold.co/1200x800/1e293b/white?text=Dashboard+Preview';
-                                }}
-                            />
+                    <div className="mt-20 relative mx-auto max-w-6xl animate-fade-in-up delay-500 perspective-1000">
+                        {/* Glow Effects */}
+                        <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-3xl blur-2xl opacity-40 animate-pulse-slow"></div>
+
+                        {/* Main Dashboard Container */}
+                        <div className="relative rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-2xl transform rotate-x-12 hover:rotate-x-0 transition-transform duration-700 ease-out">
+                            {/* Window Controls */}
+                            <div className="h-10 border-b border-white/5 bg-white/5 flex items-center px-4 gap-2">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                                </div>
+                                <div className="flex-1 text-center">
+                                    <div className="inline-block px-3 py-1 rounded-full bg-black/20 text-[10px] text-gray-400 font-mono">
+                                        syncspace.app/dashboard
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Dashboard Layout */}
+                            <div className="flex h-[600px]">
+                                {/* Sidebar Mock */}
+                                <div className="w-64 border-r border-white/5 bg-white/[0.02] p-4 hidden md:flex flex-col gap-4">
+                                    <div className="h-8 w-32 bg-white/10 rounded-lg animate-pulse"></div>
+                                    <div className="space-y-2 mt-4">
+                                        {[1, 2, 3, 4, 5].map((i) => (
+                                            <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-white/5">
+                                                <div className="w-5 h-5 rounded bg-white/10"></div>
+                                                <div className="h-3 w-20 bg-white/10 rounded"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-auto p-4 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/5">
+                                        <div className="h-4 w-24 bg-white/20 rounded mb-2"></div>
+                                        <div className="h-2 w-full bg-white/10 rounded"></div>
+                                    </div>
+                                </div>
+
+                                {/* Main Content Mock */}
+                                <div className="flex-1 p-6 overflow-hidden">
+                                    {/* Header Mock */}
+                                    <div className="flex justify-between items-center mb-8">
+                                        <div>
+                                            <div className="h-8 w-48 bg-white/10 rounded mb-2"></div>
+                                            <div className="h-4 w-64 bg-white/5 rounded"></div>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-white/10"></div>
+                                            <div className="w-10 h-10 rounded-full bg-primary/20"></div>
+                                        </div>
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                        {[
+                                            { color: 'from-blue-500/20 to-cyan-500/20', border: 'border-blue-500/20' },
+                                            { color: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-500/20' },
+                                            { color: 'from-orange-500/20 to-red-500/20', border: 'border-orange-500/20' }
+                                        ].map((style, i) => (
+                                            <div key={i} className={`p-6 rounded-xl bg-gradient-to-br ${style.color} border ${style.border} backdrop-blur-sm`}>
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 rounded-lg bg-white/10"></div>
+                                                    <div className="w-16 h-6 rounded-full bg-white/10"></div>
+                                                </div>
+                                                <div className="h-8 w-24 bg-white/20 rounded mb-2"></div>
+                                                <div className="h-4 w-32 bg-white/10 rounded"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Activity Graph Mock */}
+                                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 h-64 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent"></div>
+                                        <div className="flex items-end justify-between h-full gap-2 px-4 pb-4">
+                                            {[40, 65, 45, 80, 55, 70, 45, 60, 75, 50, 65, 85].map((h, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="w-full bg-gradient-to-t from-primary/50 to-secondary/50 rounded-t-sm transition-all duration-1000 hover:opacity-80"
+                                                    style={{ height: `${h}%` }}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Features Grid */}
             <section className="relative z-10 py-24 bg-slate-950/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
