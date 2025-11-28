@@ -15,7 +15,6 @@ import {
 import { Button, AvatarGroup } from '../components/ui';
 import Board from '../components/Board';
 import DocumentEditor from '../components/DocumentEditor';
-import EnhancedSidebar from '../components/Dashboard/EnhancedSidebar';
 
 const ProjectPage = () => {
     const { projectId } = useParams();
@@ -44,7 +43,8 @@ const ProjectPage = () => {
     if (!project) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Project not found</div>;
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+
+        <div className="flex flex-col h-full bg-slate-900 text-white">
             {/* Top Bar / Header */}
             <header className="h-16 border-b border-slate-700 bg-slate-800/50 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-20">
                 <div className="flex items-center gap-4">
@@ -89,73 +89,69 @@ const ProjectPage = () => {
                 </div>
             </header>
 
-            <div className="flex flex-1 overflow-hidden">
-                <EnhancedSidebar />
+            <main className="flex-1 flex flex-col overflow-hidden">
+                {/* Tabs */}
+                <div className="px-6 pt-6 border-b border-slate-700 bg-slate-900">
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={() => setActiveTab('board')}
+                            className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'board' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <Layout className="h-4 w-4" />
+                            Kanban Board
+                            {activeTab === 'board' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('docs')}
+                            className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'docs' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <FileText className="h-4 w-4" />
+                            Documents
+                            {activeTab === 'docs' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('files')}
+                            className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'files' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <Folder className="h-4 w-4" />
+                            Files
+                            {activeTab === 'files' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('activity')}
+                            className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'activity' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            <Activity className="h-4 w-4" />
+                            Activity
+                            {activeTab === 'activity' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+                        </button>
+                    </div>
+                </div>
 
-                <main className="flex-1 flex flex-col overflow-hidden">
-                    {/* Tabs */}
-                    <div className="px-6 pt-6 border-b border-slate-700 bg-slate-900">
-                        <div className="flex items-center gap-6">
-                            <button
-                                onClick={() => setActiveTab('board')}
-                                className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'board' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
-                            >
-                                <Layout className="h-4 w-4" />
-                                Kanban Board
-                                {activeTab === 'board' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('docs')}
-                                className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'docs' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
-                            >
-                                <FileText className="h-4 w-4" />
-                                Documents
-                                {activeTab === 'docs' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('files')}
-                                className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'files' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
-                            >
-                                <Folder className="h-4 w-4" />
-                                Files
-                                {activeTab === 'files' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('activity')}
-                                className={`pb-3 flex items-center gap-2 text-sm font-medium transition-colors relative ${activeTab === 'activity' ? 'text-primary' : 'text-gray-400 hover:text-white'}`}
-                            >
-                                <Activity className="h-4 w-4" />
-                                Activity
-                                {activeTab === 'activity' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
-                            </button>
+                {/* Content Area */}
+                <div className="flex-1 overflow-hidden bg-slate-900 relative">
+                    {activeTab === 'board' && (
+                        <Board projectId={projectId} workspaceId={project.workspace._id} />
+                    )}
+                    {activeTab === 'docs' && (
+                        <DocumentEditor projectId={projectId} workspaceId={project.workspace._id} />
+                    )}
+                    {activeTab === 'files' && (
+                        <div className="p-8 text-center text-gray-400">
+                            <Folder className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                            <h3 className="text-xl font-medium text-white mb-2">Files</h3>
+                            <p>File management coming soon...</p>
                         </div>
-                    </div>
-
-                    {/* Content Area */}
-                    <div className="flex-1 overflow-hidden bg-slate-900 relative">
-                        {activeTab === 'board' && (
-                            <Board projectId={projectId} workspaceId={project.workspace._id} />
-                        )}
-                        {activeTab === 'docs' && (
-                            <DocumentEditor projectId={projectId} workspaceId={project.workspace._id} />
-                        )}
-                        {activeTab === 'files' && (
-                            <div className="p-8 text-center text-gray-400">
-                                <Folder className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                                <h3 className="text-xl font-medium text-white mb-2">Files</h3>
-                                <p>File management coming soon...</p>
-                            </div>
-                        )}
-                        {activeTab === 'activity' && (
-                            <div className="p-8 text-center text-gray-400">
-                                <Activity className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                                <h3 className="text-xl font-medium text-white mb-2">Activity Log</h3>
-                                <p>Project activity history coming soon...</p>
-                            </div>
-                        )}
-                    </div>
-                </main>
-            </div>
+                    )}
+                    {activeTab === 'activity' && (
+                        <div className="p-8 text-center text-gray-400">
+                            <Activity className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                            <h3 className="text-xl font-medium text-white mb-2">Activity Log</h3>
+                            <p>Project activity history coming soon...</p>
+                        </div>
+                    )}
+                </div>
+            </main>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Clock, Users } from 'lucide-react';
 import axios from 'axios';
-import Sidebar from '../components/Sidebar';
+import FuturisticHeader from '../components/FuturisticHeader';
 
 const CalendarPage = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -279,140 +279,132 @@ const CalendarPage = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-slate-900 text-white">
-            <Sidebar />
 
-            <div className="flex-1 flex flex-col">
-                {/* Header */}
-                <header className="h-16 border-b border-slate-700 flex items-center justify-between px-4 md:px-8 glass sticky top-0 z-10">
-                    <div className="flex items-center gap-4">
-                        <CalendarIcon className="h-6 w-6 text-primary" />
-                        <h1 className="text-2xl font-bold text-white">Calendar</h1>
-                    </div>
-                </header>
+        <div className="flex flex-col h-full bg-slate-900 text-white">
+            {/* Futuristic Header */}
+            <FuturisticHeader title="Calendar" />
 
-                {/* Main Content */}
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-                    <div className="max-w-7xl mx-auto">
-                        {/* Controls */}
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-                            <div className="flex items-center gap-2">
+            {/* Main Content */}
+            <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+                <div className="max-w-7xl mx-auto">
+                    {/* Controls */}
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    if (view === 'month') navigateMonth(-1);
+                                    else if (view === 'week') navigateWeek(-1);
+                                    else navigateDay(-1);
+                                }}
+                                className="p-2 hover:bg-slate-700 rounded transition-colors"
+                                aria-label="Previous"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={goToToday}
+                                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded transition-colors text-sm font-medium"
+                            >
+                                Today
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (view === 'month') navigateMonth(1);
+                                    else if (view === 'week') navigateWeek(1);
+                                    else navigateDay(1);
+                                }}
+                                className="p-2 hover:bg-slate-700 rounded transition-colors"
+                                aria-label="Next"
+                            >
+                                <ChevronRight className="h-5 w-5" />
+                            </button>
+                            <h2 className="text-xl font-semibold text-white ml-4">
+                                {formatMonthYear()}
+                            </h2>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="flex bg-slate-800 rounded-lg p-1">
                                 <button
-                                    onClick={() => {
-                                        if (view === 'month') navigateMonth(-1);
-                                        else if (view === 'week') navigateWeek(-1);
-                                        else navigateDay(-1);
-                                    }}
-                                    className="p-2 hover:bg-slate-700 rounded transition-colors"
-                                    aria-label="Previous"
+                                    onClick={() => setView('month')}
+                                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'month' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
+                                        }`}
                                 >
-                                    <ChevronLeft className="h-5 w-5" />
+                                    Month
                                 </button>
                                 <button
-                                    onClick={goToToday}
-                                    className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded transition-colors text-sm font-medium"
+                                    onClick={() => setView('week')}
+                                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'week' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
+                                        }`}
                                 >
-                                    Today
+                                    Week
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        if (view === 'month') navigateMonth(1);
-                                        else if (view === 'week') navigateWeek(1);
-                                        else navigateDay(1);
-                                    }}
-                                    className="p-2 hover:bg-slate-700 rounded transition-colors"
-                                    aria-label="Next"
+                                    onClick={() => setView('day')}
+                                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'day' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
+                                        }`}
                                 >
-                                    <ChevronRight className="h-5 w-5" />
+                                    Day
                                 </button>
-                                <h2 className="text-xl font-semibold text-white ml-4">
-                                    {formatMonthYear()}
-                                </h2>
                             </div>
+                        </div>
+                    </div>
 
-                            <div className="flex items-center gap-2">
-                                <div className="flex bg-slate-800 rounded-lg p-1">
-                                    <button
-                                        onClick={() => setView('month')}
-                                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'month' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
-                                            }`}
-                                    >
-                                        Month
-                                    </button>
-                                    <button
-                                        onClick={() => setView('week')}
-                                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'week' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
-                                            }`}
-                                    >
-                                        Week
-                                    </button>
-                                    <button
-                                        onClick={() => setView('day')}
-                                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${view === 'day' ? 'bg-primary text-white' : 'text-gray-400 hover:text-white'
-                                            }`}
-                                    >
-                                        Day
-                                    </button>
+                    {/* Calendar View */}
+                    {loading ? (
+                        <div className="flex items-center justify-center h-96">
+                            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    ) : (
+                        <>
+                            {view === 'month' && renderMonthView()}
+                            {view === 'week' && renderWeekView()}
+                            {view === 'day' && renderDayView()}
+                        </>
+                    )}
+
+                    {/* Task Summary */}
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="card">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-400">Total Tasks</p>
+                                    <p className="text-2xl font-bold text-white">{tasks.length}</p>
+                                </div>
+                                <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                                    <CalendarIcon className="h-6 w-6 text-primary" />
                                 </div>
                             </div>
                         </div>
-
-                        {/* Calendar View */}
-                        {loading ? (
-                            <div className="flex items-center justify-center h-96">
-                                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                        ) : (
-                            <>
-                                {view === 'month' && renderMonthView()}
-                                {view === 'week' && renderWeekView()}
-                                {view === 'day' && renderDayView()}
-                            </>
-                        )}
-
-                        {/* Task Summary */}
-                        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="card">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-400">Total Tasks</p>
-                                        <p className="text-2xl font-bold text-white">{tasks.length}</p>
-                                    </div>
-                                    <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center">
-                                        <CalendarIcon className="h-6 w-6 text-primary" />
-                                    </div>
+                        <div className="card">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-400">Overdue</p>
+                                    <p className="text-2xl font-bold text-danger">
+                                        {tasks.filter(t => new Date(t.dueDate) < new Date() && t.status !== 'done').length}
+                                    </p>
+                                </div>
+                                <div className="h-12 w-12 rounded-lg bg-danger/20 flex items-center justify-center">
+                                    <Clock className="h-6 w-6 text-danger" />
                                 </div>
                             </div>
-                            <div className="card">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-400">Overdue</p>
-                                        <p className="text-2xl font-bold text-danger">
-                                            {tasks.filter(t => new Date(t.dueDate) < new Date() && t.status !== 'done').length}
-                                        </p>
-                                    </div>
-                                    <div className="h-12 w-12 rounded-lg bg-danger/20 flex items-center justify-center">
-                                        <Clock className="h-6 w-6 text-danger" />
-                                    </div>
+                        </div>
+                        <div className="card">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-400">Completed</p>
+                                    <p className="text-2xl font-bold text-success">
+                                        {tasks.filter(t => t.status === 'done').length}
+                                    </p>
                                 </div>
-                            </div>
-                            <div className="card">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-400">Completed</p>
-                                        <p className="text-2xl font-bold text-success">
-                                            {tasks.filter(t => t.status === 'done').length}
-                                        </p>
-                                    </div>
-                                    <div className="h-12 w-12 rounded-lg bg-success/20 flex items-center justify-center">
-                                        <Users className="h-6 w-6 text-success" />
-                                    </div>
+                                <div className="h-12 w-12 rounded-lg bg-success/20 flex items-center justify-center">
+                                    <Users className="h-6 w-6 text-success" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
     );
 };

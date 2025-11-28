@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, Plus, Mail, Shield, MoreVertical } from 'lucide-react';
 import { Button, Input, Avatar } from '../components/ui';
-import EnhancedSidebar from '../components/Dashboard/EnhancedSidebar';
-import CommandBar from '../components/Dashboard/CommandBar';
+import FuturisticHeader from '../components/FuturisticHeader';
 
 import ManageTeamModal from '../components/Dashboard/ManageTeamModal';
 
@@ -56,101 +55,109 @@ const TeamsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-            <CommandBar />
 
-            <div className="flex flex-1 overflow-hidden">
-                <EnhancedSidebar />
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300">
+            <FuturisticHeader
+                title="Teams"
+                actions={
+                    <Button
+                        variant="primary"
+                        icon={<Plus className="h-4 w-4" />}
+                        onClick={() => setIsCreateModalOpen(true)}
+                    >
+                        Create Team
+                    </Button>
+                }
+            />
 
-                <main className="flex-1 overflow-y-auto p-8">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white mb-2">Teams</h1>
-                                <p className="text-gray-400">Manage your teams and members</p>
-                            </div>
-                            <Button
-                                variant="primary"
-                                icon={<Plus className="h-4 w-4" />}
-                                onClick={() => setIsCreateModalOpen(true)}
-                            >
-                                Create Team
-                            </Button>
+            <main className="flex-1 overflow-y-auto p-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h1 className="text-3xl font-bold mb-2">Teams</h1>
+                            <p className="text-slate-500 dark:text-gray-400">Manage your teams and members</p>
                         </div>
+                        <Button
+                            variant="primary"
+                            icon={<Plus className="h-4 w-4" />}
+                            onClick={() => setIsCreateModalOpen(true)}
+                        >
+                            Create Team
+                        </Button>
+                    </div>
 
-                        {loading ? (
-                            <div className="text-center py-12 text-gray-400">Loading teams...</div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {teams.map((team) => (
-                                    <div key={team._id} className="glass border border-slate-700 rounded-xl p-6 hover:border-primary/50 transition-all group relative">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-violet-400">
-                                                <Users className="h-6 w-6" />
+                    {loading ? (
+                        <div className="text-center py-12 text-slate-500 dark:text-gray-400">Loading teams...</div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {teams.map((team) => (
+                                <div key={team._id} className="glass rounded-xl p-6 hover:border-primary/50 transition-all group relative">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-violet-400">
+                                            <Users className="h-6 w-6" />
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setActiveDropdown(activeDropdown === team._id ? null : team._id);
+                                            }}
+                                            className="text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                                        >
+                                            <MoreVertical className="h-5 w-5" />
+                                        </button>
+
+                                        {/* Dropdown */}
+                                        {activeDropdown === team._id && (
+                                            <div className="absolute top-14 right-6 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-20 animate-scale-in overflow-hidden">
+                                                <button
+                                                    onClick={() => {
+                                                        setManagingTeam(team);
+                                                        setActiveDropdown(null);
+                                                    }}
+                                                    className="w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-2"
+                                                >
+                                                    Manage Members
+                                                </button>
+                                                {/* Add Delete option later if needed */}
                                             </div>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setActiveDropdown(activeDropdown === team._id ? null : team._id);
-                                                }}
-                                                className="text-gray-400 hover:text-white p-1 rounded hover:bg-slate-700"
-                                            >
-                                                <MoreVertical className="h-5 w-5" />
-                                            </button>
+                                        )}
+                                    </div>
 
-                                            {/* Dropdown */}
-                                            {activeDropdown === team._id && (
-                                                <div className="absolute top-14 right-6 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-20 animate-scale-in overflow-hidden">
-                                                    <button
-                                                        onClick={() => {
-                                                            setManagingTeam(team);
-                                                            setActiveDropdown(null);
-                                                        }}
-                                                        className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-slate-700 hover:text-white transition-colors flex items-center gap-2"
-                                                    >
-                                                        Manage Members
-                                                    </button>
-                                                    {/* Add Delete option later if needed */}
+                                    <h3 className="text-xl font-semibold mb-2">{team.name}</h3>
+
+                                    <div className="space-y-4 mt-6">
+                                        <div className="flex items-center justify-between text-sm text-slate-500 dark:text-gray-400">
+                                            <span>Members</span>
+                                            <span className="font-medium text-slate-900 dark:text-white">{team.members?.length || 0}</span>
+                                        </div>
+
+                                        <div className="flex -space-x-2 overflow-hidden py-2">
+                                            {team.members?.slice(0, 5).map((member, i) => (
+                                                <div key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 bg-slate-700 flex items-center justify-center text-xs font-medium text-white">
+                                                    {member.user?.name?.[0] || 'U'}
+                                                </div>
+                                            ))}
+                                            {(team.members?.length || 0) > 5 && (
+                                                <div className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 bg-slate-800 flex items-center justify-center text-xs font-medium text-gray-400">
+                                                    +{team.members.length - 5}
                                                 </div>
                                             )}
                                         </div>
 
-                                        <h3 className="text-xl font-semibold text-white mb-2">{team.name}</h3>
-
-                                        <div className="space-y-4 mt-6">
-                                            <div className="flex items-center justify-between text-sm text-gray-400">
-                                                <span>Members</span>
-                                                <span className="text-white font-medium">{team.members?.length || 0}</span>
-                                            </div>
-
-                                            <div className="flex -space-x-2 overflow-hidden py-2">
-                                                {team.members?.slice(0, 5).map((member, i) => (
-                                                    <div key={i} className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 bg-slate-700 flex items-center justify-center text-xs font-medium text-white">
-                                                        {member.user?.name?.[0] || 'U'}
-                                                    </div>
-                                                ))}
-                                                {(team.members?.length || 0) > 5 && (
-                                                    <div className="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 bg-slate-800 flex items-center justify-center text-xs font-medium text-gray-400">
-                                                        +{team.members.length - 5}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <Button
-                                                variant="outline"
-                                                className="w-full mt-4"
-                                                onClick={() => setManagingTeam(team)}
-                                            >
-                                                Manage Team
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full mt-4"
+                                            onClick={() => setManagingTeam(team)}
+                                        >
+                                            Manage Team
+                                        </Button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </main>
-            </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </main>
 
             {/* Create Team Modal */}
             {isCreateModalOpen && (

@@ -1,20 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bell, Check } from 'lucide-react';
 import { Avatar } from '../ui';
-import axios from 'axios';
+import useNotifications from '../../hooks/useNotifications';
 
 const NotificationCenter = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('all');
-    const [notifications, setNotifications] = useState([]);
-    const [loading, setLoading] = useState(true);
     const dropdownRef = useRef(null);
 
-    const unreadCount = notifications.filter(n => !n.read).length;
-
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
+    // Use the hook for all notification logic
+    const { notifications, loading, unreadCount, markAsRead } = useNotifications();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -27,61 +22,14 @@ const NotificationCenter = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const fetchNotifications = async () => {
-        try {
-            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
-            if (!token) return;
-
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
-
-            const { data } = await axios.get('http://localhost:5000/api/notifications', config);
-            setNotifications(data);
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const markAsRead = async (id, e) => {
-        e.stopPropagation();
-        try {
-            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
-
-            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, config);
-
-            setNotifications(notifications.map(n =>
-                n._id === id ? { ...n, read: true } : n
-            ));
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-        }
-    };
-
-    const markAllAsRead = async () => {
-        try {
-            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
-
-            await axios.put('http://localhost:5000/api/notifications/all/read', {}, config);
-
-            setNotifications(notifications.map(n => ({ ...n, read: true })));
-        } catch (error) {
-            console.error('Error marking all notifications as read:', error);
-        }
+    const handleMarkAllAsRead = () => {
+        markAsRead('all');
     };
 
     const tabs = [
         { id: 'all', label: 'All' },
         { id: 'mention', label: 'Mentions' },
-        { id: 'assignment', label: 'Assignments' }
+        { id: 'assignment', label: 'My Tasks' }
     ];
 
     const filteredNotifications = activeTab === 'all'
@@ -129,7 +77,7 @@ const NotificationCenter = () => {
                         <h3 className="text-lg font-semibold text-white">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
-                                onClick={markAllAsRead}
+                                onClick={handleMarkAllAsRead}
                                 className="text-xs text-primary hover:text-primary/80 transition-colors font-medium flex items-center gap-1"
                             >
                                 <Check className="h-3 w-3" />
@@ -192,7 +140,10 @@ const NotificationCenter = () => {
                                         </div>
                                         {!notification.read && (
                                             <button
-                                                onClick={(e) => markAsRead(notification._id, e)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    markAsRead(notification._id);
+                                                }}
                                                 className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-700 rounded-full text-primary transition-all"
                                                 title="Mark as read"
                                             >

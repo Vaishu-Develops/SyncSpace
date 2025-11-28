@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, User, Settings, Moon, Sun, Users, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Avatar } from '../ui';
 
 const UserMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(true);
+    const { theme, toggleTheme } = useTheme();
     const dropdownRef = useRef(null);
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -26,9 +27,9 @@ const UserMenu = () => {
         { icon: User, label: 'My Profile', action: () => navigate('/profile') },
         { icon: Settings, label: 'Settings', action: () => navigate('/settings') },
         {
-            icon: darkMode ? Moon : Sun,
-            label: `Appearance (${darkMode ? 'Dark' : 'Light'})`,
-            action: () => setDarkMode(!darkMode),
+            icon: theme === 'dark' ? Moon : Sun,
+            label: `Appearance (${theme === 'dark' ? 'Dark' : 'Light'})`,
+            action: toggleTheme,
             toggle: true
         },
         { divider: true },
@@ -45,7 +46,7 @@ const UserMenu = () => {
                     <p className="text-sm font-medium text-white">{user?.name}</p>
                     <p className="text-xs text-gray-400">{user?.email}</p>
                 </div>
-                <Avatar name={user?.name} size="md" status="online" />
+                <Avatar name={user?.name} src={user?.avatar} size="md" status="online" />
                 <ChevronDown className="h-4 w-4 text-gray-400" />
             </button>
 
@@ -54,7 +55,7 @@ const UserMenu = () => {
                     {/* User Info Header */}
                     <div className="p-4 border-b border-slate-700">
                         <div className="flex items-center gap-3">
-                            <Avatar name={user?.name} size="lg" status="online" />
+                            <Avatar name={user?.name} src={user?.avatar} size="lg" status="online" />
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
                                 <p className="text-xs text-gray-400 truncate">{user?.email}</p>

@@ -1,23 +1,33 @@
-import { Pin, Clock, Zap, Palette, Code, Smartphone, Plus, FileText, UserPlus } from 'lucide-react';
+import { Pin, Clock, Zap, Palette, Code, Smartphone, Plus, FileText, UserPlus, Folder } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDashboard } from '../../context/DashboardContext';
 
 const QuickAccess = () => {
-    // Mock data - replace with actual data
-    const pinnedWorkspaces = [
-        { id: 1, name: 'Design Team', icon: Palette, color: 'from-pink-500 to-rose-500' },
-        { id: 2, name: 'Engineering', icon: Code, color: 'from-blue-500 to-cyan-500' },
-        { id: 3, name: 'Mobile Dev', icon: Smartphone, color: 'from-purple-500 to-violet-500' }
-    ];
-
-    const recentItems = [
-        { id: 1, name: 'Sprint Planning Doc', type: 'document' },
-        { id: 2, name: 'Q1 Budget Task', type: 'task' },
-        { id: 3, name: 'Brand Guidelines', type: 'document' }
-    ];
+    const { pinnedWorkspaces, recentItems, loading } = useDashboard();
+    const navigate = useNavigate();
 
     const quickActions = [
-        { id: 1, icon: Plus, label: 'New Task', color: 'text-primary' },
-        { id: 2, icon: FileText, label: 'New Doc', color: 'text-secondary' },
-        { id: 3, icon: UserPlus, label: 'Invite Member', color: 'text-accent' }
+        {
+            id: 1,
+            icon: Plus,
+            label: 'New Task',
+            color: 'text-primary',
+            action: () => navigate('/tasks?create=true')
+        },
+        {
+            id: 2,
+            icon: FileText,
+            label: 'New Doc',
+            color: 'text-secondary',
+            action: () => navigate('/files?create=true')
+        },
+        {
+            id: 3,
+            icon: UserPlus,
+            label: 'Invite Member',
+            color: 'text-accent',
+            action: () => navigate('/teams')
+        }
     ];
 
     return (
@@ -29,19 +39,28 @@ const QuickAccess = () => {
                     <h3 className="text-xs font-semibold text-gray-400 uppercase">Pinned Workspaces</h3>
                 </div>
                 <div className="space-y-1">
-                    {pinnedWorkspaces.map((workspace) => (
-                        <button
-                            key={workspace.id}
-                            className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-colors group"
-                        >
-                            <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${workspace.color} flex items-center justify-center`}>
-                                <workspace.icon className="h-4 w-4 text-white" />
-                            </div>
-                            <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
-                                {workspace.name}
-                            </span>
-                        </button>
-                    ))}
+                    {loading ? (
+                        <div className="text-xs text-gray-500 p-2">Loading...</div>
+                    ) : pinnedWorkspaces.length === 0 ? (
+                        <div className="text-xs text-gray-500 p-2 italic">
+                            No pinned workspaces. Pin one from the Workspaces page!
+                        </div>
+                    ) : (
+                        pinnedWorkspaces.map((workspace) => (
+                            <Link
+                                key={workspace._id}
+                                to={`/workspace/${workspace._id}/board`}
+                                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-colors group"
+                            >
+                                <div className={`h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center`}>
+                                    <Folder className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="text-sm text-gray-300 group-hover:text-white transition-colors truncate">
+                                    {workspace.name}
+                                </span>
+                            </Link>
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -52,17 +71,26 @@ const QuickAccess = () => {
                     <h3 className="text-xs font-semibold text-gray-400 uppercase">Recently Viewed</h3>
                 </div>
                 <div className="space-y-1">
-                    {recentItems.map((item) => (
-                        <button
-                            key={item.id}
-                            className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-colors group text-left"
-                        >
-                            <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
-                            <span className="text-sm text-gray-300 group-hover:text-white transition-colors truncate">
-                                {item.name}
-                            </span>
-                        </button>
-                    ))}
+                    {loading ? (
+                        <div className="text-xs text-gray-500 p-2">Loading...</div>
+                    ) : recentItems.length === 0 ? (
+                        <div className="text-xs text-gray-500 p-2 italic">
+                            No recent items found.
+                        </div>
+                    ) : (
+                        recentItems.map((item) => (
+                            <Link
+                                key={item.id}
+                                to={item.link}
+                                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-colors group text-left"
+                            >
+                                <div className={`h-2 w-2 rounded-full flex-shrink-0 ${item.type === 'task' ? 'bg-primary' : 'bg-secondary'}`}></div>
+                                <span className="text-sm text-gray-300 group-hover:text-white transition-colors truncate">
+                                    {item.name}
+                                </span>
+                            </Link>
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -76,6 +104,7 @@ const QuickAccess = () => {
                     {quickActions.map((action) => (
                         <button
                             key={action.id}
+                            onClick={action.action}
                             className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/50 transition-colors group"
                         >
                             <action.icon className={`h-4 w-4 ${action.color}`} />

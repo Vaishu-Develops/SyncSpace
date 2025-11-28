@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, User, Check, X } from 'lucide-react';
 import { Input, Button } from '../components/ui';
+import Logo from '../components/Logo';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -86,6 +87,9 @@ const Register = () => {
                 <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-float"></div>
 
                 <div className="z-10 text-center px-12">
+                    <div className="flex justify-center mb-6 animate-slide-up">
+                        <Logo showText={false} className="h-24 w-24" />
+                    </div>
                     <h1 className="text-6xl font-bold mb-6 gradient-text-neon animate-slide-up">
                         SyncSpace
                     </h1>
@@ -154,8 +158,8 @@ const Register = () => {
                                         <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full transition-all duration-300 ${passwordStrength.color === 'success' ? 'bg-success' :
-                                                        passwordStrength.color === 'warning' ? 'bg-warning' :
-                                                            'bg-danger'
+                                                    passwordStrength.color === 'warning' ? 'bg-warning' :
+                                                        'bg-danger'
                                                     }`}
                                                 style={{ width: `${passwordStrength.score}%` }}
                                             />

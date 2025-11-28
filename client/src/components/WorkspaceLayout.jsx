@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useParams, Link, useLocation } from 'react-router-dom';
+import FuturisticHeader from './FuturisticHeader';
 import EnhancedSidebar from './Dashboard/EnhancedSidebar';
 import { Layout, FileText, MessageSquare, Folder, Settings } from 'lucide-react';
 import axios from 'axios';
@@ -42,28 +43,12 @@ const WorkspaceLayout = () => {
         <div className="flex min-h-screen bg-slate-900 text-white">
             <EnhancedSidebar />
             <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Workspace Header */}
-                <header className="h-16 border-b border-slate-700 flex items-center justify-between px-8 bg-slate-800/50 backdrop-blur-md sticky top-0 z-10">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-xl font-bold text-white">{workspace?.name || 'Loading...'}</h1>
-                        <div className="h-6 w-px bg-slate-700"></div>
-                        <nav className="flex gap-1">
-                            {tabs.map((tab) => (
-                                <Link
-                                    key={tab.path}
-                                    to={tab.path}
-                                    className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isActive(tab.path)
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-gray-400 hover:text-white hover:bg-slate-700'
-                                        }`}
-                                >
-                                    <tab.icon className="h-4 w-4 mr-2" />
-                                    {tab.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-                </header>
+                {/* Futuristic Header */}
+                <FuturisticHeader
+                    title={workspace?.name || 'Loading...'}
+                    tabs={tabs}
+                    showSearch={true}
+                />
 
                 {/* Main Content Area */}
                 <main className="flex-1 overflow-hidden flex flex-col">

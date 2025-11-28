@@ -60,7 +60,7 @@ const UserQuickStats = () => {
     return (
         <div className="p-4 border-b border-slate-700">
             <div className="flex items-center gap-3 mb-3">
-                <Avatar name={user?.name} size="lg" />
+                <Avatar name={user?.name} src={user?.avatar} size="lg" />
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
                     <div className="flex items-center gap-2 mt-1">
