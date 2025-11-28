@@ -49,6 +49,22 @@ const createTask = async (req, res) => {
             assignee: req.user._id // Auto-assign to creator
         });
 
+        // Create notification for self-assignment (so it shows in "My Tasks")
+        const notification = await Notification.create({
+            recipient: req.user._id,
+            sender: req.user._id,
+            type: 'assignment',
+            content: `created and assigned you to task "${task.title}"`,
+            relatedId: task._id,
+            onModel: 'Task'
+        });
+
+        const populatedNotification = await Notification.findById(notification._id)
+            .populate('sender', 'name avatar');
+
+        // Emit real-time notification
+        req.io.to(req.user._id.toString()).emit('notification', populatedNotification);
+
         res.status(201).json(task);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -72,8 +88,8 @@ const updateTask = async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        // Create notification if assignee changed and is not the current user
-        if (updates.assignee && updates.assignee !== req.user._id.toString() && updates.assignee !== oldTask.assignee?.toString()) {
+        // Create notification if assignee changed (allow self-notifications for "My Tasks" tracking)
+        if (updates.assignee && updates.assignee !== oldTask.assignee?.toString()) {
             const notification = await Notification.create({
                 recipient: updates.assignee,
                 sender: req.user._id,
