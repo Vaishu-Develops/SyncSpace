@@ -8,11 +8,18 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const userInfo = localStorage.getItem('userInfo');
-        if (userInfo) {
-            setUser(JSON.parse(userInfo));
+        try {
+            const userInfo = localStorage.getItem('userInfo');
+            if (userInfo) {
+                const parsedUser = JSON.parse(userInfo);
+                setUser(parsedUser);
+            }
+        } catch (error) {
+            console.error('Error parsing user info:', error);
+            localStorage.removeItem('userInfo');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
     const login = async (email, password) => {
