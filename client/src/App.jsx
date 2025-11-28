@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useOutletContext, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useOutletContext, useLocation, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Lazy load components
@@ -202,6 +202,19 @@ function App() {
               <Route path="files" element={<FilesViewWrapper />} />
               <Route path="settings" element={<WorkspaceSettings />} />
             </Route>
+
+            {/* Catch-all route for 404 */}
+            <Route path="*" element={
+              <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+                  <p className="text-gray-400 mb-6">The page you're looking for doesn't exist.</p>
+                  <Link to="/" className="text-primary hover:text-primary/80 underline">
+                    Go back to home
+                  </Link>
+                </div>
+              </div>
+            } />
           </Routes>
         </Suspense>
       </Router>
