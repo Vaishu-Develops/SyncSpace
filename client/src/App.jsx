@@ -24,6 +24,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const ChatPanel = lazy(() => import('./components/Chat/ChatPanel'));
 const FileManager = lazy(() => import('./components/Files/FileManager'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
+const MainLayout = lazy(() => import('./components/MainLayout'));
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -100,26 +101,32 @@ function App() {
               </PublicRoute>
             } />
 
-            {/* Protected Routes */}
+            {/* Protected Routes with Sidebar Layout */}
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <MainLayout>
+                    <Dashboard />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
 
             <Route path="/project/:projectId" element={
               <ProtectedRoute>
-                <ProjectPage />
+                <MainLayout>
+                  <ProjectPage />
+                </MainLayout>
               </ProtectedRoute>
             } />
             <Route
               path="/workspaces"
               element={
                 <ProtectedRoute>
-                  <WorkspacesPage />
+                  <MainLayout>
+                    <WorkspacesPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -127,7 +134,9 @@ function App() {
               path="/teams"
               element={
                 <ProtectedRoute>
-                  <TeamsPage />
+                  <MainLayout>
+                    <TeamsPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -135,7 +144,9 @@ function App() {
               path="/tasks"
               element={
                 <ProtectedRoute>
-                  <TasksPage />
+                  <MainLayout>
+                    <TasksPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -143,7 +154,9 @@ function App() {
               path="/notifications"
               element={
                 <ProtectedRoute>
-                  <NotificationsPage />
+                  <MainLayout>
+                    <NotificationsPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -151,7 +164,9 @@ function App() {
               path="/files"
               element={
                 <ProtectedRoute>
-                  <FilesPage />
+                  <MainLayout>
+                    <FilesPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -159,7 +174,9 @@ function App() {
               path="/favorites"
               element={
                 <ProtectedRoute>
-                  <FavoritesPage />
+                  <MainLayout>
+                    <FavoritesPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -167,7 +184,9 @@ function App() {
               path="/calendar"
               element={
                 <ProtectedRoute>
-                  <CalendarPage />
+                  <MainLayout>
+                    <CalendarPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -175,7 +194,9 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <ProfilePage />
+                  <MainLayout>
+                    <ProfilePage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -183,7 +204,9 @@ function App() {
               path="/settings"
               element={
                 <ProtectedRoute>
-                  <SettingsPage />
+                  <MainLayout>
+                    <SettingsPage />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />

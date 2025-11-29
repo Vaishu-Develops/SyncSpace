@@ -23,9 +23,11 @@ const FuturisticHeader = ({
                     <Link to="/dashboard" className="flex items-center gap-3 group">
                         <Logo showText={false} />
                         {typeof title === 'string' ? (
-                            <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 hidden md:block">
-                                {title}
-                            </h1>
+                            <div className="hidden md:block">
+                                <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                                    {title}
+                                </h1>
+                            </div>
                         ) : (
                             title
                         )}
@@ -70,8 +72,6 @@ const FuturisticHeader = ({
                 {/* Right Section: Actions */}
                 <div className="flex items-center gap-3 min-w-fit">
                     {actions}
-
-                    <div className="h-6 w-px bg-white/10 mx-1"></div>
 
                     <NotificationCenter />
 
