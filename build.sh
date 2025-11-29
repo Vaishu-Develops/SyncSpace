@@ -1,13 +1,27 @@
 #!/bin/bash
 
-# Install dependencies for both client and server
+set -e
+
+if ! command -v pnpm >/dev/null 2>&1; then
+	if command -v corepack >/dev/null 2>&1; then
+		corepack enable
+		corepack prepare pnpm@9 --activate
+	else
+		npm install -g pnpm
+	fi
+fi
+
 echo "Installing server dependencies..."
-cd server && npm install
+cd server
+pnpm install --frozen-lockfile --no-strict-peer-dependencies
+cd ..
 
 echo "Installing client dependencies..."
-cd ../client && npm install
+cd client
+pnpm install --frozen-lockfile --no-strict-peer-dependencies
 
 echo "Building client application..."
-npm run build
+pnpm run build
+cd ..
 
 echo "Build completed successfully!"

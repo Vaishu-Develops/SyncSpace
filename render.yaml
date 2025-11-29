@@ -4,14 +4,25 @@ services:
     env: node
     region: oregon
     buildCommand: |
+      set -e
+      corepack enable
+      corepack prepare pnpm@9 --activate
       echo "Installing server dependencies..."
-      cd server && npm install
+      cd server
+      pnpm install --frozen-lockfile --no-strict-peer-dependencies
+      cd ..
       echo "Installing client dependencies..."
-      cd client && npm install --legacy-peer-deps
+      cd client
+      pnpm install --frozen-lockfile --no-strict-peer-dependencies
       echo "Building client application..."
-      cd client && npx vite build
+      pnpm run build
+      cd ..
       echo "Build completed successfully!"
-    startCommand: cd server && npm start
+    startCommand: |
+      corepack enable
+      corepack prepare pnpm@9 --activate
+      cd server
+      pnpm start
     envVars:
       - key: NODE_ENV
         value: production
