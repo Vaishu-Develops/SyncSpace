@@ -6,7 +6,7 @@ import { Button } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 
 const ProfilePage = () => {
-    const { user, setUser } = useAuth();
+    const { user, setUser, refreshUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState({
@@ -31,6 +31,13 @@ const ProfilePage = () => {
             fetchAccountStats();
         }
     }, [user]);
+
+    // Refresh user data on component mount to ensure latest profile info
+    useEffect(() => {
+        if (user && refreshUser) {
+            refreshUser().catch(console.error);
+        }
+    }, []);
 
     const fetchAccountStats = async () => {
         try {
@@ -89,10 +96,8 @@ const ProfilePage = () => {
                 config
             );
 
-            // Update user in context and localStorage
-            const updatedUserInfo = { ...JSON.parse(localStorage.getItem('userInfo')), ...updatedData };
-            localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
-            setUser(updatedData);
+            // Refresh user data from server to get the latest information
+            await refreshUser();
             setIsEditing(false);
 
             // Update local state to show new avatar immediately
