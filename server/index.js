@@ -20,10 +20,18 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+
+// Determine if we're in production
+const isProduction = process.env.NODE_ENV === 'production';
+const clientOrigins = isProduction 
+  ? [process.env.RENDER_EXTERNAL_URL || 'https://your-app.onrender.com']
+  : ["http://localhost:5173", "http://localhost:5174"];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
-    methods: ["GET", "POST"]
+    origin: clientOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   },
   transports: ['polling', 'websocket'],
   allowEIO3: true,
@@ -33,11 +41,16 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: clientOrigins,
   credentials: true
 }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from the React app in production
+if (isProduction) {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+}
 
 // Attach Socket.IO to requests
 app.use((req, res, next) => {
@@ -50,6 +63,16 @@ console.log('Connecting to MongoDB...');
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected Successfully'))
   .catch(err => console.error('MongoDB connection error:', err));
+
+// Health check endpoint for Render
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -138,6 +161,13 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+if (isProduction) {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
