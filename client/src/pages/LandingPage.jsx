@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, Globe, Layers, Cpu, Users } from 'lucide-react';
 import { Button } from '../components/ui';
+import Logo from '../components/Logo';
 
 const LandingPage = () => {
     return (
@@ -17,14 +18,7 @@ const LandingPage = () => {
             <nav className="relative z-50 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                                <span className="text-white font-bold">S</span>
-                            </div>
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                                SyncSpace
-                            </span>
-                        </div>
+                        <Logo />
                         <div className="flex items-center gap-4">
                             <Link to="/login" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
                                 Sign In
