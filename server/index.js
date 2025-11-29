@@ -22,13 +22,20 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST"]
-  }
+  },
+  transports: ['polling', 'websocket'],
+  allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -103,6 +110,15 @@ io.on('connection', (socket) => {
 
   socket.on('yjs-sync-response', ({ room, update, targetId }) => {
     io.to(targetId).emit('yjs-update', update);
+  });
+
+  // Error handling
+  socket.on('error', (err) => {
+    console.error('Socket error:', err);
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log('User disconnected:', socket.id, 'Reason:', reason);
   });
 
   socket.on('yjs-awareness', ({ room, update }) => {
