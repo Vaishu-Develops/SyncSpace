@@ -1,8 +1,15 @@
 // API Configuration for different environments
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.MODE === 'production' 
-    ? '' // Same domain in production
-    : 'http://localhost:5000');
+const PRODUCTION_FALLBACK_ORIGIN = 'https://syncspace-fbys.onrender.com';
+
+const resolveBrowserOrigin = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return '';
+};
+
+const API_BASE_URL = (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) || 
+  (import.meta.env.PROD ? (resolveBrowserOrigin() || PRODUCTION_FALLBACK_ORIGIN) : 'http://localhost:5000');
 
 export const API_ENDPOINTS = {
   base: API_BASE_URL,
@@ -18,9 +25,7 @@ export const API_ENDPOINTS = {
   favorites: `${API_BASE_URL}/api/favorites`
 };
 
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL ||
-  (import.meta.env.MODE === 'production'
-    ? window.location.origin // Same domain in production
-    : 'http://localhost:5000');
+export const SOCKET_URL = (import.meta.env.VITE_SOCKET_URL && import.meta.env.VITE_SOCKET_URL.trim()) ||
+  (import.meta.env.PROD ? (resolveBrowserOrigin() || PRODUCTION_FALLBACK_ORIGIN) : 'http://localhost:5000');
 
 export default API_BASE_URL;

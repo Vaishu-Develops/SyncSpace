@@ -24,8 +24,12 @@ const httpServer = createServer(app);
 // Determine if we're in production
 const isProduction = process.env.NODE_ENV === 'production';
 const clientOrigins = isProduction 
-  ? [process.env.RENDER_EXTERNAL_URL || 'https://your-app.onrender.com']
+  ? [process.env.RENDER_EXTERNAL_URL, process.env.CLIENT_URL].filter(Boolean)
   : ["http://localhost:5173", "http://localhost:5174"];
+
+if (clientOrigins.length === 0) {
+  clientOrigins.push('https://syncspace-fbys.onrender.com');
+}
 
 const io = new Server(httpServer, {
   cors: {
