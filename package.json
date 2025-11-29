@@ -8,13 +8,13 @@
         "build": "pnpm run install-client && cd client && pnpm run build",
         "start": "cd server && pnpm start",
         "heroku-postbuild": "pnpm run build",
-        "install-client": "cd client && pnpm install --frozen-lockfile --no-strict-peer-dependencies",
+        "install-client": "cd client && pnpm install --frozen-lockfile --prod false --no-strict-peer-dependencies",
         "install-server": "cd server && pnpm install --frozen-lockfile --no-strict-peer-dependencies",
         "install-all": "pnpm run install-client && pnpm run install-server"
     },
     "engines": {
-        "node": ">=18.0.0",
-        "npm": ">=9.0.0"
+        "node": "20.18.1",
+        "pnpm": "^9.0.0"
     },
     "packageManager": "pnpm@9.12.3",
     "devDependencies": {

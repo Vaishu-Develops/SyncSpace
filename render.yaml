@@ -13,7 +13,7 @@ services:
       cd ..
       echo "Installing client dependencies..."
       cd client
-      pnpm install --frozen-lockfile --no-strict-peer-dependencies
+      pnpm install --frozen-lockfile --prod false --no-strict-peer-dependencies
       echo "Building client application..."
       pnpm run build
       cd ..
