@@ -5,7 +5,7 @@ import { Button, Input, Avatar, AvatarGroup } from '../components/ui';
 import FuturisticHeader from '../components/FuturisticHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '../context/SocketContext';
-
+import { API_ENDPOINTS } from '../config/api';
 import ManageTeamModal from '../components/Dashboard/ManageTeamModal';
 
 const TeamsPage = () => {
@@ -55,7 +55,7 @@ const TeamsPage = () => {
             const config = {
                 headers: { Authorization: `Bearer ${token}` },
             };
-            const { data } = await axios.get('http://localhost:5000/api/teams', config);
+            const { data } = await axios.get(API_ENDPOINTS.teams, config);
             setTeams(data);
             setLoading(false);
         } catch (error) {
@@ -71,7 +71,7 @@ const TeamsPage = () => {
             const config = {
                 headers: { Authorization: `Bearer ${token}` },
             };
-            await axios.post('http://localhost:5000/api/teams', { name: newTeamName }, config);
+            await axios.post(API_ENDPOINTS.teams, { name: newTeamName }, config);
             setNewTeamName('');
             setIsCreateModalOpen(false);
             // fetchTeams(); // Handled by socket now
