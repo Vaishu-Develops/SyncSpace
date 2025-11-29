@@ -7,7 +7,7 @@ services:
       echo "Installing server dependencies..."
       cd server && npm ci
       echo "Installing client dependencies..."
-      cd client && npm ci  
+      cd client && npm install --legacy-peer-deps
       echo "Building client application..."
       cd client && npm run build
       echo "Build completed successfully!"
