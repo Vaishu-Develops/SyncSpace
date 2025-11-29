@@ -11,7 +11,14 @@ const createTeam = async (req, res) => {
             createdBy: req.user._id,
         });
 
-        res.status(201).json(team);
+        // Populate creator for frontend
+        const populatedTeam = await Team.findById(team._id)
+            .populate('members.user', 'name email avatar')
+            .populate('createdBy', 'name');
+
+        req.io.to(req.user._id.toString()).emit('team-created', populatedTeam);
+
+        res.status(201).json(populatedTeam);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -58,7 +65,19 @@ const addMember = async (req, res) => {
         team.members.push({ user: userToAdd._id, role: 'member' });
         await team.save();
 
-        res.json(team);
+        const populatedTeam = await Team.findById(team._id)
+            .populate('members.user', 'name email avatar')
+            .populate('createdBy', 'name');
+
+        // Notify all members
+        populatedTeam.members.forEach(member => {
+            req.io.to(member.user._id.toString()).emit('team-updated', populatedTeam);
+        });
+
+        // Also notify the new member specifically that they've been added to a team (so it appears in their list)
+        req.io.to(userToAdd._id.toString()).emit('team-created', populatedTeam);
+
+        res.json(populatedTeam);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

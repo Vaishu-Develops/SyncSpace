@@ -21,12 +21,12 @@ const Button = ({
     type = 'button',
     ...props
 }) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseStyles = 'inline-flex items-center justify-center font-bold rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
 
     const variants = {
-        primary: 'text-white bg-gradient-to-r from-primary to-secondary shadow-glow-primary hover:opacity-90 hover:shadow-glow-primary-lg focus:ring-primary',
-        secondary: 'bg-slate-800 border border-slate-700 text-white hover:bg-slate-700 hover:border-primary focus:ring-primary',
-        outline: 'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary',
+        primary: 'text-white bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:brightness-110 focus:ring-purple-500 border border-white/10',
+        secondary: 'bg-slate-800 border border-slate-700 text-white hover:bg-slate-700 hover:border-purple-500 focus:ring-purple-500',
+        outline: 'bg-transparent border-2 border-purple-500 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 focus:ring-purple-500',
         ghost: 'bg-transparent text-gray-400 hover:bg-slate-800 hover:text-white focus:ring-slate-700',
         danger: 'bg-danger text-white shadow-glow-danger hover:opacity-90 hover:shadow-glow-danger focus:ring-danger',
     };

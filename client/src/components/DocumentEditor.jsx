@@ -1,7 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Collaboration from '@tiptap/extension-collaboration';
-import { TextStyle, FontSize } from '@tiptap/extension-text-style';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { FontSize } from '../extensions/FontSize';
 import * as Y from 'yjs';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -29,7 +30,7 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const saveDocument = useRef(null);
-    
+
     useEffect(() => {
         saveDocument.current = async (content) => {
             setSaving(true);
@@ -64,8 +65,36 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
 
     const extensions = useMemo(() => [
         StarterKit.configure({
-            history: false,
-            undoRedo: false,
+            // Enable history but let Collaboration handle the sync
+            history: {
+                depth: 10,
+                newGroupDelay: 500,
+            },
+            heading: {
+                levels: [1, 2, 3, 4, 5, 6],
+                HTMLAttributes: {
+                    class: 'heading',
+                },
+            },
+            paragraph: {
+                HTMLAttributes: {
+                    class: 'paragraph',
+                },
+            },
+            bulletList: {
+                itemTypeName: 'listItem',
+                keepMarks: true,
+                keepAttributes: false,
+            },
+            orderedList: {
+                itemTypeName: 'listItem', 
+                keepMarks: true,
+                keepAttributes: false,
+            },
+            listItem: {
+                keepMarks: true,
+                keepAttributes: false,
+            },
         }),
         TextStyle,
         FontSize,
@@ -74,22 +103,31 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
         }),
     ], [ydoc]);
 
-    const editor = useEditor(
-        provider && isProviderReady
-            ? {
-                extensions,
-                editorProps: {
-                    attributes: {
-                        class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] px-8 py-6',
-                    },
-                },
-                onUpdate: ({ editor }) => {
-                    debouncedSave(editor.getHTML());
-                },
+    const editor = useEditor({
+        extensions,
+        editable: true,
+        editorProps: {
+            attributes: {
+                class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] px-8 py-6',
+            },
+        },
+        onUpdate: ({ editor }) => {
+            debouncedSave(editor.getHTML());
+        },
+        onCreate: ({ editor }) => {
+            console.log('Editor created successfully');
+            console.log('Editor commands available:', Object.keys(editor.commands));
+            console.log('Editor extensions:', editor.extensionManager.extensions.map(ext => ext.name));
+        },
+        onSelectionUpdate: ({ editor }) => {
+            // Force update to refresh toolbar state
+            if (editor) {
+                setTimeout(() => {
+                    // Trigger re-render by checking active states
+                }, 0);
             }
-            : null,
-        [provider, isProviderReady, extensions]
-    );
+        },
+    }, [extensions]);
 
     // Always call useEffect for document fetching, but conditionally execute
     useEffect(() => {
@@ -132,7 +170,16 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
     const MenuButton = ({ onClick, isActive, children, title, disabled = false }) => (
         <button
             type="button"
-            onClick={onClick}
+            onClick={(e) => {
+                e.preventDefault();
+                try {
+                    if (onClick && !disabled) {
+                        onClick();
+                    }
+                } catch (error) {
+                    console.error(`Error in ${title} button:`, error);
+                }
+            }}
             onMouseDown={(event) => event.preventDefault()}
             disabled={disabled}
             className={`p-2 rounded transition-colors ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-700'} ${isActive ? 'bg-slate-700 text-primary' : 'text-gray-400'}`}
@@ -182,58 +229,170 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
                     <div className="w-px h-6 bg-slate-700 mx-2"></div>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                        isActive={editor.isActive('heading', { level: 1 })}
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H1 button');
+                                editor.chain().focus().toggleHeading({ level: 1 }).run();
+                                console.log('H1 command executed');
+                            } catch (error) {
+                                console.error('Heading 1 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 1 }) || false}
                         title="Heading 1"
                     >
                         <Heading1 className="h-4 w-4" />
                     </MenuButton>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                        isActive={editor.isActive('heading', { level: 2 })}
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H2 button');
+                                editor.chain().focus().toggleHeading({ level: 2 }).run();
+                                console.log('H2 command executed');
+                            } catch (error) {
+                                console.error('Heading 2 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 2 }) || false}
                         title="Heading 2"
                     >
                         <Heading2 className="h-4 w-4" />
                     </MenuButton>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                        isActive={editor.isActive('heading', { level: 3 })}
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H3 button');
+                                editor.chain().focus().toggleHeading({ level: 3 }).run();
+                                console.log('H3 command executed');
+                            } catch (error) {
+                                console.error('Heading 3 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 3 }) || false}
                         title="Heading 3"
                     >
                         <Heading3 className="h-4 w-4" />
                     </MenuButton>
 
+                    <MenuButton
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H4 button');
+                                editor.chain().focus().toggleHeading({ level: 4 }).run();
+                                console.log('H4 command executed');
+                            } catch (error) {
+                                console.error('Heading 4 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 4 }) || false}
+                        title="Heading 4"
+                    >
+                        <span className="text-xs font-bold">H4</span>
+                    </MenuButton>
+
+                    <MenuButton
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H5 button');
+                                editor.chain().focus().toggleHeading({ level: 5 }).run();
+                                console.log('H5 command executed');
+                            } catch (error) {
+                                console.error('Heading 5 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 5 }) || false}
+                        title="Heading 5"
+                    >
+                        <span className="text-xs font-bold">H5</span>
+                    </MenuButton>
+
+                    <MenuButton
+                        onClick={() => {
+                            if (!editor || !editor.isEditable) {
+                                console.log('Editor not ready');
+                                return;
+                            }
+                            try {
+                                console.log('Clicking H6 button');
+                                editor.chain().focus().toggleHeading({ level: 6 }).run();
+                                console.log('H6 command executed');
+                            } catch (error) {
+                                console.error('Heading 6 error:', error);
+                            }
+                        }}
+                        isActive={editor?.isActive('heading', { level: 6 }) || false}
+                        title="Heading 6"
+                    >
+                        <span className="text-xs font-bold">H6</span>
+                    </MenuButton>
+
                     <div className="w-px h-6 bg-slate-700 mx-2"></div>
 
-                    <label className="relative">
-                        <span className="sr-only">Font size</span>
+                    <div className="flex items-center gap-2 px-2 border-l border-slate-700 ml-2">
                         <select
-                            className="appearance-none bg-slate-700/60 text-gray-200 text-xs rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary"
-                            value={editor.getAttributes('textStyle')?.fontSize || 'default'}
+                            className="bg-slate-700 text-white text-xs rounded px-2 py-1 border border-slate-600 focus:outline-none focus:border-primary cursor-pointer"
+                            value={editor.getAttributes('textStyle')?.fontSize || ''}
                             onChange={(event) => {
+                                event.preventDefault();
                                 const value = event.target.value;
-                                if (value === 'default') {
-                                    editor.chain().focus().unsetMark('textStyle').run();
-                                } else {
-                                    editor.chain().focus().setMark('textStyle', { fontSize: value }).run();
+                                try {
+                                    if (value) {
+                                        console.log('Setting font size to:', value);
+                                        editor.chain().focus().setFontSize(value).run();
+                                    } else {
+                                        console.log('Unsetting font size');
+                                        editor.chain().focus().unsetFontSize().run();
+                                    }
+                                } catch (error) {
+                                    console.error('Font size error:', error);
                                 }
                             }}
-                            onMouseDown={(event) => event.preventDefault()}
                         >
-                            <option value="default">Font</option>
+                            <option value="">Size</option>
                             <option value="12px">12</option>
                             <option value="14px">14</option>
                             <option value="16px">16</option>
                             <option value="18px">18</option>
                             <option value="20px">20</option>
                             <option value="24px">24</option>
+                            <option value="30px">30</option>
+                            <option value="36px">36</option>
+                            <option value="48px">48</option>
+                            <option value="60px">60</option>
+                            <option value="72px">72</option>
                         </select>
-                    </label>
+                    </div>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().toggleBulletList().run()}
+                        onClick={() => {
+                            try {
+                                editor.chain().focus().toggleBulletList().run();
+                            } catch (error) {
+                                console.error('Bullet list error:', error);
+                            }
+                        }}
                         isActive={editor.isActive('bulletList')}
                         title="Bullet List"
                     >
@@ -241,7 +400,13 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
                     </MenuButton>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                        onClick={() => {
+                            try {
+                                editor.chain().focus().toggleOrderedList().run();
+                            } catch (error) {
+                                console.error('Ordered list error:', error);
+                            }
+                        }}
                         isActive={editor.isActive('orderedList')}
                         title="Numbered List"
                     >
@@ -259,18 +424,30 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
                     <div className="w-px h-6 bg-slate-700 mx-2"></div>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().undo().run()}
+                        onClick={() => {
+                            try {
+                                editor.chain().focus().undo().run();
+                            } catch (error) {
+                                console.error('Undo error:', error);
+                            }
+                        }}
                         isActive={false}
-                        disabled={!editor.can().undo()}
+                        disabled={!editor?.can().undo()}
                         title="Undo"
                     >
                         <Undo className="h-4 w-4" />
                     </MenuButton>
 
                     <MenuButton
-                        onClick={() => editor.chain().focus().redo().run()}
+                        onClick={() => {
+                            try {
+                                editor.chain().focus().redo().run();
+                            } catch (error) {
+                                console.error('Redo error:', error);
+                            }
+                        }}
                         isActive={false}
-                        disabled={!editor.can().redo()}
+                        disabled={!editor?.can().redo()}
                         title="Redo"
                     >
                         <Redo className="h-4 w-4" />
@@ -354,73 +531,21 @@ const DocumentEditor = ({ projectId, workspaceId: propWorkspaceId }) => {
             rememberUpgrade: false,
             timeout: 20000,
         });
-        
+
         const room = `document-${workspaceId}${projectId ? `-${projectId}` : ''}`;
         let newProvider = null;
 
         const handleSocketConnect = () => {
             console.log('DocumentEditor socket connected');
             socket.emit('join-room', room);
-            
-            // Create provider after socket connection
+
+            // Create provider after socket connection with simple setup
             newProvider = new SocketIOProvider(socket, ydoc, room);
 
-            // Wait a moment for provider to initialize and ensure all properties are available
-            setTimeout(() => {
-                const updateUsers = () => {
-                    if (newProvider && newProvider.awareness) {
-                        const states = Array.from(newProvider.awareness.getStates().values());
-                        setOnlineUsers(states);
-                    }
-                };
-
-                // Check if provider is fully ready with all required properties
-                const isProviderComplete = newProvider && 
-                                         newProvider.awareness && 
-                                         newProvider.doc && 
-                                         newProvider.doc === ydoc;
-
-                if (isProviderComplete) {
-                    newProvider.awareness.on('change', updateUsers);
-                    
-                    newProvider.awareness.setLocalStateField('user', {
-                        name: userInfo?.name || 'Anonymous',
-                        color: userColor
-                    });
-
-                    setProvider(newProvider);
-                    setIsProviderReady(true);
-                    console.log('Provider fully initialized');
-                } else {
-                    console.warn('Provider not completely ready, waiting...');
-                    // Fallback polling with stricter checks
-                    let attempts = 0;
-                    const maxAttempts = 30; // 3 seconds with 100ms intervals
-                    
-                    const checkProviderComplete = setInterval(() => {
-                        attempts++;
-                        const isComplete = newProvider && 
-                                         newProvider.awareness && 
-                                         newProvider.doc && 
-                                         newProvider.doc === ydoc;
-                                         
-                        if (isComplete) {
-                            newProvider.awareness.on('change', updateUsers);
-                            newProvider.awareness.setLocalStateField('user', {
-                                name: userInfo?.name || 'Anonymous',
-                                color: userColor
-                            });
-                            setProvider(newProvider);
-                            setIsProviderReady(true);
-                            clearInterval(checkProviderComplete);
-                            console.log('Provider initialized after', attempts, 'attempts');
-                        } else if (attempts >= maxAttempts) {
-                            console.error('Provider failed to initialize properly after', maxAttempts, 'attempts');
-                            clearInterval(checkProviderComplete);
-                        }
-                    }, 100);
-                }
-            }, 200); // Increased timeout to 200ms for more stable initialization
+            // Just set the provider without complex checks
+            setProvider(newProvider);
+            setIsProviderReady(true);
+            console.log('Provider ready');
         };
 
         const handleSocketError = (error) => {
@@ -439,7 +564,7 @@ const DocumentEditor = ({ projectId, workspaceId: propWorkspaceId }) => {
         return () => {
             if (newProvider) {
                 if (newProvider.awareness) {
-                    newProvider.awareness.off('change', () => {});
+                    newProvider.awareness.off('change', () => { });
                 }
                 newProvider.destroy();
             }
@@ -449,18 +574,6 @@ const DocumentEditor = ({ projectId, workspaceId: propWorkspaceId }) => {
             socket.disconnect();
         };
     }, [workspaceId, projectId, userInfo?.name, userColor]);
-
-    // Don't render the editor until the provider is ready
-    if (!provider || !isProviderReady) {
-        return (
-            <div className="flex items-center justify-center h-full text-slate-400">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <p>Loading editor...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <ErrorBoundary>

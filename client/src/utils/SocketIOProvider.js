@@ -65,14 +65,23 @@ class SimpleAwareness extends EventEmitter {
 
 export class SocketIOProvider {
     constructor(socket, doc, room) {
+        if (!socket || !doc || !room) {
+            throw new Error('SocketIOProvider requires socket, doc, and room parameters');
+        }
+
         this.socket = socket;
         this.doc = doc;  // Make sure doc is accessible for TipTap
+        this.document = doc; // Alias for compatibility
         this.room = room;
         this.awareness = new SimpleAwareness(doc);
-        
+
         // Add properties that TipTap's CollaborationCursor expects
         this.awareness.doc = doc;  // Ensure awareness has doc reference
+        this.awareness.document = doc; // Alias for compatibility
         this.awareness.clientID = doc.clientID;
+
+        // Flag to indicate if provider is fully ready
+        this._isReady = false;
 
         this.onUpdate = (update, origin) => {
             if (origin !== this) {
@@ -84,17 +93,25 @@ export class SocketIOProvider {
         };
 
         this.onSocketUpdate = (update) => {
-            const updateArray = new Uint8Array(update);
-            Y.applyUpdate(this.doc, updateArray, this);
+            try {
+                const updateArray = new Uint8Array(update);
+                Y.applyUpdate(this.doc, updateArray, this);
+            } catch (error) {
+                console.error('Error applying Y.js update:', error);
+            }
         };
 
         this.onSyncRequest = ({ requestorId }) => {
-            const state = Y.encodeStateAsUpdate(this.doc);
-            this.socket.emit('yjs-sync-response', {
-                room: this.room,
-                update: state,
-                targetId: requestorId
-            });
+            try {
+                const state = Y.encodeStateAsUpdate(this.doc);
+                this.socket.emit('yjs-sync-response', {
+                    room: this.room,
+                    update: state,
+                    targetId: requestorId
+                });
+            } catch (error) {
+                console.error('Error handling sync request:', error);
+            }
         };
 
         this.onAwarenessUpdate = ({ clientID, state }) => {
@@ -105,9 +122,13 @@ export class SocketIOProvider {
         };
 
         this.onSocketAwareness = ({ update }) => {
-            const { clientID, state } = update;
-            if (clientID !== this.doc.clientID) {
-                this.awareness.applyRemoteUpdate(clientID, state);
+            try {
+                const { clientID, state } = update;
+                if (clientID !== this.doc.clientID) {
+                    this.awareness.applyRemoteUpdate(clientID, state);
+                }
+            } catch (error) {
+                console.error('Error applying awareness update:', error);
             }
         };
 
@@ -122,15 +143,32 @@ export class SocketIOProvider {
 
         // Request initial sync
         this.socket.emit('yjs-sync-request', { room: this.room });
+
+        // Mark as ready after setup
+        this._isReady = true;
+    }
+
+    // Getter to check if provider is ready
+    get isReady() {
+        return this._isReady && this.doc && this.awareness;
     }
 
     destroy() {
-        this.doc.off('update', this.onUpdate);
-        this.socket.off('yjs-update', this.onSocketUpdate);
-        this.socket.off('yjs-sync-request', this.onSyncRequest);
+        this._isReady = false;
+        
+        if (this.doc) {
+            this.doc.off('update', this.onUpdate);
+        }
+        
+        if (this.socket) {
+            this.socket.off('yjs-update', this.onSocketUpdate);
+            this.socket.off('yjs-sync-request', this.onSyncRequest);
+            this.socket.off('yjs-awareness', this.onSocketAwareness);
+        }
 
-        this.awareness.off('update', this.onAwarenessUpdate);
-        this.socket.off('yjs-awareness', this.onSocketAwareness);
-        this.awareness.destroy();
+        if (this.awareness) {
+            this.awareness.off('update', this.onAwarenessUpdate);
+            this.awareness.destroy();
+        }
     }
 }

@@ -55,16 +55,16 @@ const Avatar = ({
     };
 
     return (
-        <div className={`relative inline-block ${className}`}>
+        <div className={`relative inline-block rounded-full ${className}`}>
             {src ? (
                 <img
                     src={src}
                     alt={alt || name}
-                    className={`${sizes[size]} rounded-full object-cover border-2 border-slate-700`}
+                    className={`${sizes[size]} rounded-full object-cover`}
                 />
             ) : (
                 <div
-                    className={`${sizes[size]} rounded-full bg-gradient-to-br ${getColorFromName(name)} flex items-center justify-center text-white font-semibold border-2 border-slate-700`}
+                    className={`${sizes[size]} rounded-full bg-gradient-to-br ${getColorFromName(name)} flex items-center justify-center text-white font-semibold`}
                 >
                     {getInitials(name)}
                 </div>

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "@tiptap/core": "^3.11.1",
     "@tiptap/extension-collaboration": "^3.11.0",
     "@tiptap/extension-collaboration-cursor": "^2.26.2",
     "@tiptap/extension-text-style": "^3.11.0",
