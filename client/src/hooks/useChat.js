@@ -10,8 +10,29 @@ export const useChat = (workspaceId, projectId = null) => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        // Initialize socket connection
-        socketRef.current = io('http://localhost:5000');
+        // Initialize socket connection with better configuration
+        socketRef.current = io('http://localhost:5000', {
+            transports: ['polling', 'websocket'],
+            upgrade: true,
+            rememberUpgrade: false,
+            timeout: 20000,
+            forceNew: true
+        });
+
+        // Connection event handlers
+        socketRef.current.on('connect', () => {
+            console.log('Chat socket connected');
+            const room = projectId || workspaceId;
+            socketRef.current.emit('join-workspace', room);
+        });
+
+        socketRef.current.on('connect_error', (error) => {
+            console.error('Chat socket connection error:', error);
+        });
+
+        socketRef.current.on('disconnect', (reason) => {
+            console.log('Chat socket disconnected:', reason);
+        });
 
         // Join room
         const room = projectId || workspaceId;

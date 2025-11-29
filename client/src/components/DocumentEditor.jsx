@@ -350,14 +350,16 @@ const DocumentEditor = ({ projectId, workspaceId: propWorkspaceId }) => {
         const socket = io('http://localhost:5000', {
             forceNew: true,
             transports: ['polling', 'websocket'],
-            timeout: 10000,
+            upgrade: true,
+            rememberUpgrade: false,
+            timeout: 20000,
         });
         
         const room = `document-${workspaceId}${projectId ? `-${projectId}` : ''}`;
         let newProvider = null;
 
         const handleSocketConnect = () => {
-            console.log('Socket connected');
+            console.log('DocumentEditor socket connected');
             socket.emit('join-room', room);
             
             // Create provider after socket connection

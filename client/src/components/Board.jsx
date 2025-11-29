@@ -7,7 +7,13 @@ import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import TaskDetailModal from './Board/TaskDetailModal';
 
-const socket = io('http://localhost:5000');
+const socket = io('http://localhost:5000', {
+    transports: ['polling', 'websocket'],
+    upgrade: true,
+    rememberUpgrade: false,
+    timeout: 20000,
+    forceNew: true
+});
 
 const Board = ({ projectId, workspaceId: propWorkspaceId }) => {
     const params = useParams();

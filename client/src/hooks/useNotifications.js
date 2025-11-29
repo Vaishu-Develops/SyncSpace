@@ -8,15 +8,35 @@ const useNotifications = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:5000');
+        const newSocket = io('http://localhost:5000', {
+            transports: ['polling', 'websocket'],
+            upgrade: true,
+            rememberUpgrade: false,
+            timeout: 20000,
+            forceNew: true
+        });
         setSocket(newSocket);
 
-        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        if (userInfo) {
-            newSocket.emit('user-online', userInfo._id);
-        }
+        // Connection event handlers
+        newSocket.on('connect', () => {
+            console.log('Notifications socket connected');
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (userInfo) {
+                newSocket.emit('user-online', userInfo._id);
+            }
+        });
 
-        return () => newSocket.close();
+        newSocket.on('connect_error', (error) => {
+            console.error('Notifications socket connection error:', error);
+        });
+
+        newSocket.on('disconnect', (reason) => {
+            console.log('Notifications socket disconnected:', reason);
+        });
+
+        return () => {
+            newSocket.close();
+        };
     }, []);
 
     const fetchNotifications = useCallback(async () => {
