@@ -5,11 +5,11 @@ services:
     region: oregon
     buildCommand: |
       echo "Installing server dependencies..."
-      cd server && npm ci
+      cd server && npm install
       echo "Installing client dependencies..."
       cd client && npm install --legacy-peer-deps
       echo "Building client application..."
-      cd client && npm run build
+      cd client && npx vite build
       echo "Build completed successfully!"
     startCommand: cd server && npm start
     envVars:
