@@ -1,1 +1,18 @@
-version: 1\n\nbuild:\n  commands:\n    - echo \"Installing server dependencies...\"\n    - cd server && npm ci\n    - echo \"Installing client dependencies...\"\n    - cd ../client && npm ci\n    - echo \"Building client application...\"\n    - npm run build\n    - echo \"Build completed successfully!\"\n\nstart:\n  command: cd server && npm start\n\nenv:\n  NODE_ENV: production\n  \nhealth_check:\n  path: /api/health\n  \nregions:\n  - oregon
+services:
+  - type: web
+    name: syncspace
+    env: node
+    region: oregon
+    buildCommand: |
+      echo "Installing server dependencies..."
+      cd server && npm ci
+      echo "Installing client dependencies..."
+      cd client && npm ci  
+      echo "Building client application..."
+      cd client && npm run build
+      echo "Build completed successfully!"
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
