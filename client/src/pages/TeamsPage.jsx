@@ -1,207 +1,321 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Users, Settings, Trash2, UserPlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Users, Plus, Mail, Shield, MoreVertical, Search, Sparkles } from 'lucide-react';
+import { Button, Input, Avatar, AvatarGroup } from '../components/ui';
+import FuturisticHeader from '../components/FuturisticHeader';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSocket } from '../context/SocketContext';
+
 import ManageTeamModal from '../components/Dashboard/ManageTeamModal';
 
 const TeamsPage = () => {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newTeamName, setNewTeamName] = useState('');
+
+    // New state for managing team
     const [managingTeam, setManagingTeam] = useState(null);
+    const [activeDropdown, setActiveDropdown] = useState(null);
+
+    const socket = useSocket();
 
     useEffect(() => {
         fetchTeams();
+        const handleClickOutside = () => setActiveDropdown(null);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleTeamUpdated = (updatedTeam) => {
+            setTeams(prevTeams => prevTeams.map(team =>
+                team._id === updatedTeam._id ? updatedTeam : team
+            ));
+        };
+
+        const handleTeamCreated = (newTeam) => {
+            setTeams(prevTeams => [...prevTeams, newTeam]);
+        };
+
+        socket.on('team-updated', handleTeamUpdated);
+        socket.on('team-created', handleTeamCreated);
+
+        return () => {
+            socket.off('team-updated', handleTeamUpdated);
+            socket.off('team-created', handleTeamCreated);
+        };
+    }, [socket]);
 
     const fetchTeams = async () => {
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = {
-                headers: {
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             };
-
             const { data } = await axios.get('http://localhost:5000/api/teams', config);
             setTeams(data);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching teams:', error);
-        } finally {
             setLoading(false);
         }
     };
 
-    const handleCreateTeam = async (teamData) => {
+    const handleCreateTeam = async (e) => {
+        e.preventDefault();
         try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = {
-                headers: {
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             };
-
-            await axios.post('http://localhost:5000/api/teams', teamData, config);
-            fetchTeams();
-            setShowCreateModal(false);
+            await axios.post('http://localhost:5000/api/teams', { name: newTeamName }, config);
+            setNewTeamName('');
+            setIsCreateModalOpen(false);
+            // fetchTeams(); // Handled by socket now
         } catch (error) {
             console.error('Error creating team:', error);
         }
     };
 
-    const handleDeleteTeam = async (teamId) => {
-        if (!window.confirm('Are you sure you want to delete this team?')) return;
-
-        try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
-            };
-
-            await axios.delete(`http://localhost:5000/api/teams/${teamId}`, config);
-            fetchTeams();
-        } catch (error) {
-            console.error('Error deleting team:', error);
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-            </div>
-        );
-    }
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                type: "spring",
+                stiffness: 100
+            }
+        }
+    };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-white">Teams</h1>
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowCreateModal(true)}
-                    className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors"
-                >
-                    <Plus className="h-5 w-5" />
-                    Create Team
-                </motion.button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {teams.map((team) => (
-                    <motion.div
-                        key={team._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-slate-800 rounded-lg p-6 hover:bg-slate-700 transition-colors"
-                    >
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 className="text-xl font-semibold text-white">{team.name}</h3>
-                                <p className="text-slate-400 mt-1">{team.description}</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setManagingTeam(team)}
-                                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-600 rounded"
-                                >
-                                    <Settings className="h-4 w-4" />
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteTeam(team._id)}
-                                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <Users className="h-4 w-4" />
-                                <span>{team.members?.length || 0} members</span>
-                            </div>
-                            <button
-                                onClick={() => setManagingTeam(team)}
-                                className="text-primary hover:text-primary-light flex items-center gap-1 text-sm"
-                            >
-                                <UserPlus className="h-4 w-4" />
-                                Manage
-                            </button>
-                        </div>
+        <div className="flex flex-col h-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+            <FuturisticHeader
+                title="Teams"
+                actions={
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                            variant="primary"
+                            icon={<Plus className="h-4 w-4" />}
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border-none shadow-lg shadow-blue-500/20"
+                        >
+                            Create Team
+                        </Button>
                     </motion.div>
-                ))}
-            </div>
+                }
+            />
 
-            {teams.length === 0 && (
-                <div className="text-center py-12">
-                    <Users className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">No teams yet</h3>
-                    <p className="text-slate-400 mb-4">Create your first team to start collaborating</p>
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+            <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                <div className="max-w-7xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
                     >
-                        Create Team
-                    </button>
+                        <div>
+                            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-2">
+                                Your Squads
+                            </h1>
+                            <p className="text-slate-400 text-lg">Manage your teams and collaborate efficiently</p>
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="md:hidden flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl shadow-lg"
+                        >
+                            <Plus className="h-5 w-5" />
+                            <span>Create Team</span>
+                        </motion.button>
+                    </motion.div>
+
+                    {loading ? (
+                        <div className="flex items-center justify-center h-64">
+                            <div className="relative">
+                                <div className="h-12 w-12 rounded-full border-b-2 border-blue-500 animate-spin"></div>
+                                <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-t-2 border-purple-500 animate-spin reverse-spin"></div>
+                            </div>
+                        </div>
+                    ) : teams.length === 0 ? (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center py-16 bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-slate-800/50 border-dashed"
+                        >
+                            <div className="h-20 w-20 bg-slate-800/80 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/10">
+                                <Users className="h-10 w-10 text-purple-400" />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-3 text-white">No Teams Yet</h3>
+                            <p className="text-slate-400 max-w-md mx-auto mb-8">
+                                Create your first team to start collaborating with others on projects and tasks.
+                            </p>
+                            <Button
+                                variant="primary"
+                                icon={<Plus className="h-4 w-4" />}
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 border-none"
+                            >
+                                Create Team
+                            </Button>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        >
+                            {teams.map((team) => (
+                                <motion.div
+                                    key={team._id}
+                                    variants={itemVariants}
+                                    whileHover={{ scale: 1.02, y: -2 }}
+                                    className="group relative bg-slate-800/40 backdrop-blur-md rounded-xl p-6 border border-slate-700/50 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                                    <div className="relative z-10">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center text-blue-400 group-hover:text-purple-400 transition-colors shadow-inner shadow-white/5">
+                                                <Users className="h-6 w-6" />
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveDropdown(activeDropdown === team._id ? null : team._id);
+                                                }}
+                                                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+                                            >
+                                                <MoreVertical className="h-5 w-5" />
+                                            </button>
+
+                                            {/* Dropdown */}
+                                            <AnimatePresence>
+                                                {activeDropdown === team._id && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                        className="absolute top-12 right-0 w-48 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden backdrop-blur-xl"
+                                                    >
+                                                        <button
+                                                            onClick={() => {
+                                                                setManagingTeam(team);
+                                                                setActiveDropdown(null);
+                                                            }}
+                                                            className="w-full px-4 py-3 text-left text-sm text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                        >
+                                                            <Users className="h-4 w-4" />
+                                                            Manage Members
+                                                        </button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+
+                                        <h3 className="text-xl font-bold mb-2 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all">
+                                            {team.name}
+                                        </h3>
+
+                                        <div className="space-y-4 mt-6">
+                                            <div className="flex items-center justify-between text-sm text-slate-400">
+                                                <span className="flex items-center gap-2">
+                                                    <Shield className="h-3 w-3" />
+                                                    Members
+                                                </span>
+                                                <span className="font-bold text-white bg-slate-700/50 px-2 py-0.5 rounded-md border border-slate-600/50">
+                                                    {team.members?.length || 0}
+                                                </span>
+                                            </div>
+
+                                            <div className="py-2 pl-1">
+                                                <AvatarGroup
+                                                    avatars={team.members?.map(member => ({
+                                                        src: member.user?.avatar,
+                                                        name: member.user?.name,
+                                                        alt: member.user?.name
+                                                    })) || []}
+                                                    max={5}
+                                                    size="sm"
+                                                />
+                                            </div>
+
+                                            <Button
+                                                variant="outline"
+                                                className="w-full mt-4 border-slate-600/50 hover:bg-white/5 hover:border-purple-500/50 hover:text-purple-400 transition-all"
+                                                onClick={() => setManagingTeam(team)}
+                                            >
+                                                Manage Team
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    )}
                 </div>
-            )}
+            </main>
 
             {/* Create Team Modal */}
             <AnimatePresence>
-                {showCreateModal && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                {isCreateModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-slate-800 rounded-lg p-6 w-full max-w-md"
+                            className="w-full max-w-md bg-slate-900/90 border border-slate-700/50 rounded-2xl shadow-2xl p-6 backdrop-blur-xl"
                         >
-                            <h2 className="text-xl font-bold text-white mb-4">Create New Team</h2>
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const formData = new FormData(e.target);
-                                    handleCreateTeam({
-                                        name: formData.get('name'),
-                                        description: formData.get('description'),
-                                    });
-                                }}
-                            >
-                                <div className="mb-4">
-                                    <label className="block text-slate-300 mb-2">Team Name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl">
+                                    <Sparkles className="h-6 w-6 text-purple-400" />
+                                </div>
+                                <h2 className="text-xl font-bold text-white">Create New Team</h2>
+                            </div>
+
+                            <form onSubmit={handleCreateTeam} className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-400 mb-2">Team Name</label>
+                                    <Input
+                                        value={newTeamName}
+                                        onChange={(e) => setNewTeamName(e.target.value)}
+                                        placeholder="e.g., Engineering Squad"
                                         required
-                                        className="w-full px-3 py-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-primary focus:outline-none"
+                                        autoFocus
+                                        className="bg-slate-800/50 border-slate-700 focus:border-purple-500 focus:ring-purple-500/20"
                                     />
                                 </div>
-                                <div className="mb-6">
-                                    <label className="block text-slate-300 mb-2">Description</label>
-                                    <textarea
-                                        name="description"
-                                        rows={3}
-                                        className="w-full px-3 py-2 bg-slate-700 text-white rounded border border-slate-600 focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div className="flex gap-3">
-                                    <button
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <Button
                                         type="button"
-                                        onClick={() => setShowCreateModal(false)}
-                                        className="flex-1 px-4 py-2 text-slate-300 bg-slate-700 rounded hover:bg-slate-600 transition-colors"
+                                        variant="ghost"
+                                        onClick={() => setIsCreateModalOpen(false)}
+                                        className="hover:bg-white/5 text-slate-400 hover:text-white"
                                     >
                                         Cancel
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                         type="submit"
-                                        className="flex-1 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition-colors"
+                                        variant="primary"
+                                        className="bg-gradient-to-r from-blue-600 to-purple-600 border-none hover:shadow-lg hover:shadow-purple-500/20"
                                     >
-                                        Create
-                                    </button>
+                                        Create Team
+                                    </Button>
                                 </div>
                             </form>
                         </motion.div>
