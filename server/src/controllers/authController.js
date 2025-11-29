@@ -28,6 +28,8 @@ const registerUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                avatar: user.avatar,
+                bio: user.bio,
                 token: generateToken(user._id),
             });
         } else {
@@ -49,6 +51,8 @@ const authUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                avatar: user.avatar,
+                bio: user.bio,
                 token: generateToken(user._id),
             });
         } else {
@@ -97,4 +101,24 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, authUser, updateUserProfile };
+const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        
+        if (user) {
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                bio: user.bio,
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { registerUser, authUser, updateUserProfile, getUserProfile };
