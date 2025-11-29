@@ -19,9 +19,11 @@ services:
       cd ..
       echo "Build completed successfully!"
     startCommand: |
+      set -e
       corepack enable
       corepack prepare pnpm@9 --activate
       cd server
+      pnpm install --frozen-lockfile --no-strict-peer-dependencies
       pnpm start
     envVars:
       - key: NODE_ENV
