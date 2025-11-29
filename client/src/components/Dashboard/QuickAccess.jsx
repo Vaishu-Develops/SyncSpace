@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDashboard } from '../../context/DashboardContext';
 
 const QuickAccess = () => {
-    const { pinnedWorkspaces, recentItems, loading } = useDashboard();
+    const dashboardContext = useDashboard();
+    const { pinnedWorkspaces = [], recentItems = [], loading = false } = dashboardContext || {};
     const navigate = useNavigate();
 
     const quickActions = [

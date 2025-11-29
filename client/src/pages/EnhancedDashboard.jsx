@@ -6,6 +6,7 @@ import FuturisticHeader from '../components/FuturisticHeader';
 import QuickCreateButton from '../components/Dashboard/QuickCreateButton';
 import CreateWorkspaceModal from '../components/Dashboard/CreateWorkspaceModal';
 import { AvatarGroup, Button } from '../components/ui';
+import { DashboardProvider, useDashboard } from '../context/DashboardContext';
 
 const EnhancedDashboard = () => {
     const [workspaces, setWorkspaces] = useState([]);
