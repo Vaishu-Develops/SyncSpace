@@ -22,6 +22,9 @@ const fileSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    url: {
+        type: String
+    },
     workspace: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Workspace',

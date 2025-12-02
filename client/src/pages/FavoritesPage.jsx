@@ -31,7 +31,14 @@ const FavoritesPage = () => {
     };
 
     const toggleFavorite = async (itemType, itemId) => {
-        try {\n            await api.post('/api/favorites/toggle', { itemType, itemId });\n            // Refresh favorites\n            fetchFavorites();\n        } catch (error) {\n            console.error('Error toggling favorite:', error);\n        }\n    };
+        try {
+            await api.post('/api/favorites/toggle', { itemType, itemId });
+            // Refresh favorites
+            fetchFavorites();
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+        }
+    };
 
     const filterItems = (items, searchField = 'name') => {
         if (!searchQuery) return items;
