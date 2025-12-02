@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import FileUpload from './FileUpload';
 import FileCard from './FileCard';
 import { Folder, Loader } from 'lucide-react';

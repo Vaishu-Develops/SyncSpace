@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Upload, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const FileUpload = ({ workspaceId, projectId, onUploadComplete }) => {
     const [isDragging, setIsDragging] = useState(false);

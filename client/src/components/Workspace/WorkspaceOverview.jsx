@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import { Plus, Briefcase, Clock, ArrowRight, MoreVertical } from 'lucide-react';
 import { Button } from '../ui';
 
