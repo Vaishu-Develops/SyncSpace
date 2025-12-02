@@ -1,1 +1,81 @@
-import axios from 'axios';\nimport { API_ENDPOINTS } from '../config/api';\n\n// Create axios instance with default config\nconst api = axios.create({\n  baseURL: API_ENDPOINTS.base,\n  headers: {\n    'Content-Type': 'application/json',\n  },\n});\n\n// Request interceptor to add auth token\napi.interceptors.request.use(\n  (config) => {\n    const userInfo = localStorage.getItem('userInfo');\n    if (userInfo) {\n      const { token } = JSON.parse(userInfo);\n      if (token) {\n        config.headers.Authorization = `Bearer ${token}`;\n      }\n    }\n    return config;\n  },\n  (error) => {\n    return Promise.reject(error);\n  }\n);\n\n// Response interceptor for error handling\napi.interceptors.response.use(\n  (response) => response,\n  (error) => {\n    if (error.response?.status === 401) {\n      // Handle unauthorized access\n      localStorage.removeItem('userInfo');\n      window.location.href = '/login';\n    }\n    return Promise.reject(error);\n  }\n);\n\nexport default api;\n\n// Utility functions for common API calls\nexport const apiHelpers = {\n  // Auth\n  login: (credentials) => api.post('/api/auth/login', credentials),\n  register: (userData) => api.post('/api/auth/register', userData),\n  getProfile: () => api.get('/api/auth/profile'),\n  \n  // Teams\n  getTeams: () => api.get('/api/teams'),\n  createTeam: (teamData) => api.post('/api/teams', teamData),\n  deleteTeam: (teamId) => api.delete(`/api/teams/${teamId}`),\n  \n  // Workspaces\n  getWorkspaces: () => api.get('/api/workspaces'),\n  createWorkspace: (workspaceData) => api.post('/api/workspaces', workspaceData),\n  deleteWorkspace: (workspaceId) => api.delete(`/api/workspaces/${workspaceId}`),\n  updateWorkspace: (workspaceId, data) => api.put(`/api/workspaces/${workspaceId}`, data),\n  \n  // Projects\n  getProjects: () => api.get('/api/projects'),\n  getProject: (projectId) => api.get(`/api/projects/${projectId}`),\n  createProject: (projectData) => api.post('/api/projects', projectData),\n  \n  // Tasks\n  getMyTasks: () => api.get('/api/tasks/my-tasks'),\n  \n  // Files\n  getFiles: () => api.get('/api/files'),\n  deleteFile: (fileId) => api.delete(`/api/files/${fileId}`),\n  \n  // Favorites\n  getFavorites: () => api.get('/api/favorites'),\n  toggleFavorite: (data) => api.post('/api/favorites/toggle', data),\n  \n  // Documents\n  getDocument: (workspaceId, projectId) => {\n    let url = `/api/documents/${workspaceId}`;\n    if (projectId) url += `?projectId=${projectId}`;\n    return api.get(url);\n  }\n};
+import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
+
+// Create axios instance with default config
+const api = axios.create({
+	baseURL: API_ENDPOINTS.base,
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+// Request interceptor to add auth token
+api.interceptors.request.use(
+	(config) => {
+		const userInfo = localStorage.getItem('userInfo');
+		if (userInfo) {
+			const { token } = JSON.parse(userInfo);
+			if (token) {
+				config.headers.Authorization = `Bearer ${token}`;
+			}
+		}
+		return config;
+	},
+	(error) => Promise.reject(error)
+);
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response?.status === 401) {
+			localStorage.removeItem('userInfo');
+			window.location.href = '/login';
+		}
+		return Promise.reject(error);
+	}
+);
+
+export default api;
+
+// Utility functions for common API calls
+export const apiHelpers = {
+	// Auth
+	login: (credentials) => api.post('/api/auth/login', credentials),
+	register: (userData) => api.post('/api/auth/register', userData),
+	getProfile: () => api.get('/api/auth/profile'),
+
+	// Teams
+	getTeams: () => api.get('/api/teams'),
+	createTeam: (teamData) => api.post('/api/teams', teamData),
+	deleteTeam: (teamId) => api.delete(`/api/teams/${teamId}`),
+
+	// Workspaces
+	getWorkspaces: () => api.get('/api/workspaces'),
+	createWorkspace: (workspaceData) => api.post('/api/workspaces', workspaceData),
+	deleteWorkspace: (workspaceId) => api.delete(`/api/workspaces/${workspaceId}`),
+	updateWorkspace: (workspaceId, data) => api.put(`/api/workspaces/${workspaceId}`, data),
+
+	// Projects
+	getProjects: () => api.get('/api/projects'),
+	getProject: (projectId) => api.get(`/api/projects/${projectId}`),
+	createProject: (projectData) => api.post('/api/projects', projectData),
+
+	// Tasks
+	getMyTasks: () => api.get('/api/tasks/my-tasks'),
+
+	// Files
+	getFiles: () => api.get('/api/files'),
+	deleteFile: (fileId) => api.delete(`/api/files/${fileId}`),
+
+	// Favorites
+	getFavorites: () => api.get('/api/favorites'),
+	toggleFavorite: (data) => api.post('/api/favorites/toggle', data),
+
+	// Documents
+	getDocument: (workspaceId, projectId) => {
+		let url = `/api/documents/${workspaceId}`;
+		if (projectId) url += `?projectId=${projectId}`;
+		return api.get(url);
+	}
+};
