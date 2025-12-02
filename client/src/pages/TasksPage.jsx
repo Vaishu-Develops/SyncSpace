@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import FuturisticHeader from '../components/FuturisticHeader';
 import { CheckCircle2, Circle, Clock, AlertCircle, ArrowRight, Calendar, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';

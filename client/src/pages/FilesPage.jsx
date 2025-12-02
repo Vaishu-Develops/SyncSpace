@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Upload, File, Image, FileText, Download, Trash2, Search, Filter, Grid, List as ListIcon } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 import { Button } from '../components/ui';
 
 const FilesPage = () => {

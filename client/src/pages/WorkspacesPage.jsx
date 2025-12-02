@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import api from '../utils/api';
 import { Grid, List, Filter, Plus, Folder, MoreVertical, Clock, Star, Pin } from 'lucide-react';
 import { Link } from 'react-router-dom';

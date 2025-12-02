@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { Grid, List, BarChart3, Filter, Plus, MoreVertical, Folder, Clock, Briefcase, Zap, FileText, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import FuturisticHeader from '../components/FuturisticHeader';
