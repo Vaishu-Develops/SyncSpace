@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, Folder, FileText, File as FileIcon, Search, MoreVertical, Clock, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import api from '../utils/api';
 
 const FavoritesPage = () => {
