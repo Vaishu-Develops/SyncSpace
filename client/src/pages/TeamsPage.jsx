@@ -51,11 +51,7 @@ const TeamsPage = () => {
 
     const fetchTeams = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-            const { data } = await axios.get(API_ENDPOINTS.teams, config);
+            const { data } = await api.get('/api/teams');
             setTeams(data);
             setLoading(false);
         } catch (error) {
@@ -67,11 +63,7 @@ const TeamsPage = () => {
     const handleCreateTeam = async (e) => {
         e.preventDefault();
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-            await axios.post(API_ENDPOINTS.teams, { name: newTeamName }, config);
+            await api.post('/api/teams', { name: newTeamName });
             setNewTeamName('');
             setIsCreateModalOpen(false);
             // fetchTeams(); // Handled by socket now

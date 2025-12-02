@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Clock, Users } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 import FuturisticHeader from '../components/FuturisticHeader';
 
 const CalendarPage = () => {

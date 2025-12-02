@@ -89,11 +89,11 @@ const EnhancedDashboard = () => {
 
             const workspaceId = workspaces[0]._id; // Default to first for now
 
-            await axios.post('http://localhost:5000/api/projects', {
+            await api.post('/api/projects', {
                 name,
                 description,
                 workspaceId
-            }, config);
+            });
 
             fetchProjects();
         } catch (error) {

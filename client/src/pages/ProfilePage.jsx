@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Mail, Camera, Save, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 import FuturisticHeader from '../components/FuturisticHeader';
 import { Button } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
@@ -72,8 +72,6 @@ const ProfilePage = () => {
         setLoading(true);
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-
             // Create FormData object to handle file upload
             const data = new FormData();
             data.append('name', formData.name);
@@ -83,17 +81,14 @@ const ProfilePage = () => {
                 data.append('avatar', formData.avatarFile);
             }
 
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`
-                }
-            };
-
-            const { data: updatedData } = await axios.put(
+            const { data: updatedData } = await api.put(
                 '/api/auth/profile',
                 data,
-                config
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             );
 
             // Refresh user data from server to get the latest information

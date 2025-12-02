@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { Save, Trash2, AlertTriangle, Check, X } from 'lucide-react';
 import { Button, Input } from '../components/ui';
 
@@ -44,16 +44,9 @@ const WorkspaceSettings = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            const { data } = await axios.put(
+            const { data } = await api.put(
                 `/api/workspaces/${workspaceId}`,
-                formData,
-                config
+                formData
             );
             setWorkspace(data);
             setIsEditing(false);
