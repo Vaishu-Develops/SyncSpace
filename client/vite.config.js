@@ -23,12 +23,12 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: process.env.VITE_API_URL || 'http://localhost:5000',
         changeOrigin: true,
         secure: false
       },
       '/socket.io': {
-        target: 'http://localhost:5000',
+        target: process.env.VITE_SOCKET_URL || 'http://localhost:5000',
         changeOrigin: true,
         ws: true
       }

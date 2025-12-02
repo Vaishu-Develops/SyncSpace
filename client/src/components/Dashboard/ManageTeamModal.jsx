@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { X, UserPlus, Trash2, Shield } from 'lucide-react';
 import { Button, Input, Avatar } from '../ui';
 
@@ -16,15 +16,9 @@ const ManageTeamModal = ({ isOpen, onClose, team, onUpdate }) => {
         setError('');
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-
-            await axios.post(
-                `http://localhost:5000/api/teams/${team._id}/members`,
-                { email },
-                config
+            await api.post(
+                `/api/teams/${team._id}/members`,
+                { email }
             );
 
             setEmail('');

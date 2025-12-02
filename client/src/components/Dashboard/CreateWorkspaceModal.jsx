@@ -31,11 +31,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onSuccess, initialData = null }
 
     const fetchTeams = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-            const { data } = await axios.get('http://localhost:5000/api/teams', config);
+            const { data } = await api.get('/api/teams');
             setTeams(data);
             // Only set default team if not editing and no team selected
             if (!initialData && data.length > 0 && !formData.teamId) {
@@ -52,22 +48,15 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onSuccess, initialData = null }
         setError('');
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-
             if (initialData) {
-                await axios.put(
-                    `http://localhost:5000/api/workspaces/${initialData._id}`,
-                    formData,
-                    config
+                await api.put(
+                    `/api/workspaces/${initialData._id}`,
+                    formData
                 );
             } else {
-                await axios.post(
-                    'http://localhost:5000/api/workspaces',
-                    formData,
-                    config
+                await api.post(
+                    '/api/workspaces',
+                    formData
                 );
             }
 

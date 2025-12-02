@@ -18,13 +18,7 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated }) => {
 
     const fetchTeams = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            const { data } = await axios.get('http://localhost:5000/api/teams', config);
+            const { data } = await api.get('/api/teams');
             setTeams(data);
             if (data.length > 0) {
                 setTeamId(data[0]._id);
@@ -38,15 +32,9 @@ const CreateWorkspaceModal = ({ isOpen, onClose, onWorkspaceCreated }) => {
         e.preventDefault();
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            const { data } = await axios.post(
-                'http://localhost:5000/api/workspaces',
-                { name, description, teamId },
-                config
+            const { data } = await api.post(
+                '/api/workspaces',
+                { name, description, teamId }
             );
             onWorkspaceCreated(data);
             onClose();

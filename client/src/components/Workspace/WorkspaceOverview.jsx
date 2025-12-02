@@ -20,10 +20,8 @@ const WorkspaceOverview = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const response = await axios.get(
-                `/api/projects?workspaceId=${workspaceId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+            const response = await api.get(
+                `/api/projects?workspaceId=${workspaceId}`
             );
             setProjects(response.data);
         } catch (error) {
@@ -78,10 +76,7 @@ const WorkspaceOverview = () => {
         if (!window.confirm('Are you sure you want to delete this project? All tasks and docs will be lost.')) return;
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            await axios.delete(`http://localhost:5000/api/projects/${projectId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/projects/${projectId}`);
             fetchProjects();
         } catch (error) {
             console.error('Error deleting project:', error);

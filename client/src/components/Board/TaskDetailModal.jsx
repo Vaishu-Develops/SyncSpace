@@ -29,10 +29,7 @@ const TaskDetailModal = ({ task, isOpen, onClose, onUpdate, workspaceId }) => {
     const fetchMembers = async () => {
         try {
             console.log('Fetching members for workspace:', workspaceId);
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const { data } = await axios.get(`http://localhost:5000/api/workspaces/${workspaceId}/members`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data } = await api.get(`/api/workspaces/${workspaceId}/members`);
             console.log('Members fetched:', data);
             setMembers(data);
         } catch (error) {
@@ -43,16 +40,13 @@ const TaskDetailModal = ({ task, isOpen, onClose, onUpdate, workspaceId }) => {
     const handleSave = async () => {
         try {
             setLoading(true);
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const { data } = await axios.put(`http://localhost:5000/api/tasks/${task._id}`, {
+            const { data } = await api.put(`/api/tasks/${task._id}`, {
                 title,
                 description,
                 status,
                 priority,
                 assignee: assignee || null,
                 dueDate
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
             onUpdate(data);
             onClose();

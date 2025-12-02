@@ -58,12 +58,7 @@ const FileManager = ({ workspaceId, projectId = null }) => {
         if (!window.confirm('Are you sure you want to delete this file?')) return;
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-
-            await axios.delete(`http://localhost:5000/api/files/${fileId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
+            await api.delete(`/api/files/${fileId}`);
             fetchFiles();
         } catch (error) {
             console.error('Error deleting file:', error);

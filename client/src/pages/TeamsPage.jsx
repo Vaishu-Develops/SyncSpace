@@ -5,7 +5,6 @@ import { Button, Input, Avatar, AvatarGroup } from '../components/ui';
 import FuturisticHeader from '../components/FuturisticHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '../context/SocketContext';
-import { API_ENDPOINTS } from '../config/api';
 import ManageTeamModal from '../components/Dashboard/ManageTeamModal';
 
 const TeamsPage = () => {

@@ -6,7 +6,7 @@ import { FontSize } from '../extensions/FontSize';
 import * as Y from 'yjs';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import io from 'socket.io-client';
 import { SocketIOProvider } from '../utils/SocketIOProvider';
 import ErrorBoundary from './ErrorBoundary';
@@ -35,13 +35,10 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
         saveDocument.current = async (content) => {
             setSaving(true);
             try {
-                const token = JSON.parse(localStorage.getItem('userInfo')).token;
-                const config = { headers: { Authorization: `Bearer ${token}` } };
-
                 const payload = { content };
                 if (projectId) payload.projectId = projectId;
 
-                await axios.put(`http://localhost:5000/api/documents/${workspaceId}`, payload, config);
+                await api.put(`/api/documents/${workspaceId}`, payload);
                 setLastSaved(new Date());
             } catch (error) {
                 console.error('Error saving document:', error);
@@ -135,15 +132,12 @@ const EditorComponent = ({ ydoc, provider, userInfo, userColor, workspaceId, pro
 
         const fetchDocument = async () => {
             try {
-                const token = JSON.parse(localStorage.getItem('userInfo')).token;
-                const config = { headers: { Authorization: `Bearer ${token}` } };
-
-                let url = `http://localhost:5000/api/documents/${workspaceId}`;
+                let url = `/api/documents/${workspaceId}`;
                 if (projectId) {
                     url += `?projectId=${projectId}`;
                 }
 
-                const { data } = await axios.get(url, config);
+                const { data } = await api.get(url);
                 if (data.content && editor.isEmpty) {
                     editor.commands.setContent(data.content);
                 }
@@ -524,7 +518,13 @@ const DocumentEditor = ({ projectId, workspaceId: propWorkspaceId }) => {
     }, [ydoc]);
 
     useEffect(() => {
-        const socket = io('http://localhost:5000', {
+        // Get socket URL from the same base as API
+        const getSocketUrl = () => {
+            const apiUrl = api.defaults.baseURL || (import.meta.env.PROD ? 'https://syncspace-fbys.onrender.com' : 'http://localhost:5000');
+            return apiUrl;
+        };
+
+        const socket = io(getSocketUrl(), {
             forceNew: true,
             transports: ['polling', 'websocket'],
             upgrade: true,
