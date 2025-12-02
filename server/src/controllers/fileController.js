@@ -51,7 +51,8 @@ const uploadFile = async (req, res) => {
         const file = await File.create({
             name: req.file.filename,
             originalName: req.file.originalname,
-            path: req.file.path,\n            url: `/uploads/${req.file.filename}`,
+            path: req.file.path,
+            url: `/uploads/${req.file.filename}`,
             size: req.file.size,
             mimeType: req.file.mimetype,
             workspace: workspaceId,
