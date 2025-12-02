@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import api from '../utils/api';
 import { Grid, List, Filter, Plus, Folder, MoreVertical, Clock, Star, Pin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button, AvatarGroup } from '../components/ui';
