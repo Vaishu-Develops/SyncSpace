@@ -3,7 +3,7 @@ import { Outlet, useParams, Link, useLocation } from 'react-router-dom';
 import FuturisticHeader from './FuturisticHeader';
 import EnhancedSidebar from './Dashboard/EnhancedSidebar';
 import { Layout, FileText, MessageSquare, Folder, Settings } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const WorkspaceLayout = () => {
     const { workspaceId } = useParams();

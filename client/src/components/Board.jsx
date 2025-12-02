@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Plus, MoreHorizontal, Calendar, User as UserIcon, Edit2 } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import TaskDetailModal from './Board/TaskDetailModal';
 
-const socket = io('http://localhost:5000', {
+// Get socket URL from the same base as API
+const getSocketUrl = () => {
+    const apiUrl = api.defaults.baseURL || (import.meta.env.PROD ? 'https://syncspace-fbys.onrender.com' : 'http://localhost:5000');
+    return apiUrl;
+};
+
+const socket = io(getSocketUrl(), {
     transports: ['polling', 'websocket'],
     upgrade: true,
     rememberUpgrade: false,
@@ -55,15 +61,12 @@ const Board = ({ projectId, workspaceId: propWorkspaceId }) => {
 
     const fetchTasks = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            let url = `http://localhost:5000/api/tasks/${workspaceId}`;
+            let url = `/api/tasks/${workspaceId}`;
             if (projectId) {
                 url += `?projectId=${projectId}`;
             }
 
-            const { data } = await axios.get(url, config);
+            const { data } = await api.get(url);
 
             setTasks(data);
 
@@ -131,16 +134,12 @@ const Board = ({ projectId, workspaceId: propWorkspaceId }) => {
 
         // API call
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            await axios.put(
-                `http://localhost:5000/api/tasks/${draggableId}/position`,
+            await api.put(
+                `/api/tasks/${draggableId}/position`,
                 {
                     status: destination.droppableId,
                     position: destination.index,
-                },
-                config
+                }
             );
 
             socket.emit('task-updated', { workspaceId });
@@ -155,9 +154,6 @@ const Board = ({ projectId, workspaceId: propWorkspaceId }) => {
         if (!title) return;
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
             const payload = {
                 title,
                 workspaceId,
@@ -169,7 +165,7 @@ const Board = ({ projectId, workspaceId: propWorkspaceId }) => {
                 payload.project = projectId;
             }
 
-            const { data } = await axios.post('http://localhost:5000/api/tasks', payload, config);
+            const { data } = await api.post('/api/tasks', payload);
 
             setTasks([...tasks, data]);
             const newColumns = { ...columns };

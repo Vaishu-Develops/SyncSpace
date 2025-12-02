@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui';
 import { Zap, Briefcase } from 'lucide-react';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const UserQuickStats = () => {
     const { user } = useAuth();
@@ -14,16 +14,9 @@ const UserQuickStats = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
-                if (!token) return;
-
-                const config = {
-                    headers: { Authorization: `Bearer ${token}` }
-                };
-
                 const [tasksRes, projectsRes] = await Promise.all([
                     api.get('/api/tasks/my-tasks'),
-                    axios.get('http://localhost:5000/api/projects', config)
+                    api.get('/api/projects')
                 ]);
 
                 // Calculate tasks due today
