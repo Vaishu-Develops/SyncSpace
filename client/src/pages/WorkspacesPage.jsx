@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../utils/api';
 import { Grid, List, Filter, Plus, Folder, MoreVertical, Clock, Star, Pin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button, AvatarGroup } from '../components/ui';
@@ -30,11 +31,7 @@ const WorkspacesPage = () => {
 
     const fetchWorkspaces = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = {
-                headers: { Authorization: `Bearer ${token}` },
-            };
-            const { data } = await axios.get('http://localhost:5000/api/workspaces', config);
+            const { data } = await api.get('/api/workspaces');
             setWorkspaces(data);
             setLoading(false);
         } catch (error) {
@@ -47,9 +44,7 @@ const WorkspacesPage = () => {
         if (!window.confirm('Are you sure you want to delete this workspace?')) return;
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.delete(`http://localhost:5000/api/workspaces/${workspaceId}`, config);
+            await api.delete(`/api/workspaces/${workspaceId}`);
             fetchWorkspaces();
         } catch (error) {
             console.error('Error deleting workspace:', error);

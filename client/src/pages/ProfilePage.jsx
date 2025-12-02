@@ -45,10 +45,10 @@ const ProfilePage = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             // Fetch workspaces count
-            const workspacesRes = await axios.get('http://localhost:5000/api/workspaces', config);
+            const workspacesRes = await api.get('/api/workspaces');
 
             // Fetch tasks and count completed ones
-            const tasksRes = await axios.get('http://localhost:5000/api/tasks/my-tasks', config);
+            const tasksRes = await api.get('/api/tasks/my-tasks');
             const completedTasks = tasksRes.data.filter(task => task.status === 'done').length;
 
             setStats({

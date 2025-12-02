@@ -28,7 +28,7 @@ const WorkspaceSettings = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const { data } = await axios.get(`http://localhost:5000/api/workspaces/${workspaceId}`, config);
+            const { data } = await api.get(`/api/workspaces/${workspaceId}`);
             setWorkspace(data);
             setFormData({
                 name: data.name,
@@ -75,7 +75,7 @@ const WorkspaceSettings = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            await axios.delete(`http://localhost:5000/api/workspaces/${workspaceId}`, config);
+            await api.delete(`/api/workspaces/${workspaceId}`);
             navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to delete workspace');

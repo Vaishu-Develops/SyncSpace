@@ -21,7 +21,7 @@ const TasksPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const { data } = await axios.get('http://localhost:5000/api/tasks/my-tasks', config);
+            const { data } = await api.get('/api/tasks/my-tasks');
             setTasks(data);
         } catch (error) {
             console.error('Error fetching my tasks:', error);

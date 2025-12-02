@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Star, Folder, FileText, File as FileIcon, Search, MoreVertical, Clock, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios';\nimport api from '../utils/api';
 
 const FavoritesPage = () => {
     const [favorites, setFavorites] = useState({
@@ -19,10 +19,7 @@ const FavoritesPage = () => {
 
     const fetchFavorites = async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            const { data } = await axios.get('http://localhost:5000/api/favorites', config);
+            const { data } = await api.get('/api/favorites');
             setFavorites(data);
         } catch (error) {
             console.error('Error fetching favorites:', error);
