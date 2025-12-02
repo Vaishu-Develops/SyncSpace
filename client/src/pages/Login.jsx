@@ -107,6 +107,7 @@ const Login = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 icon={<Mail className="h-5 w-5" />}
+                                autoComplete="email"
                                 required
                             />
 
@@ -117,6 +118,7 @@ const Login = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 icon={<Lock className="h-5 w-5" />}
+                                autoComplete="current-password"
                                 required
                             />
                         </div>
