@@ -19,7 +19,7 @@ const WorkspaceLayout = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 };
-                const { data } = await axios.get(`http://localhost:5000/api/workspaces/${workspaceId}`, config);
+                const { data } = await api.get(`/api/workspaces/${workspaceId}`);
                 setWorkspace(data);
             } catch (error) {
                 console.error('Error fetching workspace:', error);

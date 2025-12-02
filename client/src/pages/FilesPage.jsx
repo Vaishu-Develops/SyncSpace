@@ -20,7 +20,7 @@ const FilesPage = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             // Fetch all files across all workspaces
-            const { data } = await axios.get('http://localhost:5000/api/files', config);
+            const { data } = await api.get('/api/files');
             setFiles(data);
         } catch (error) {
             console.error('Error fetching files:', error);
@@ -36,7 +36,7 @@ const FilesPage = () => {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
-            await axios.delete(`http://localhost:5000/api/files/${fileId}`, config);
+            await api.delete(`/api/files/${fileId}`);
             setFiles(files.filter(f => f._id !== fileId));
         } catch (error) {
             console.error('Error deleting file:', error);
@@ -44,7 +44,7 @@ const FilesPage = () => {
     };
 
     const handleDownload = (file) => {
-        window.open(`http://localhost:5000${file.url}`, '_blank');
+        window.open(`${api.defaults.baseURL || 'https://syncspace-fbys.onrender.com'}${file.url}`, '_blank');
     };
 
     const getFileIcon = (mimeType) => {

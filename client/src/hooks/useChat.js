@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import io from 'socket.io-client';
+
+// Get socket URL from the same base as API
+const getSocketUrl = () => {
+    const apiUrl = api.defaults.baseURL || (import.meta.env.PROD ? 'https://syncspace-fbys.onrender.com' : 'http://localhost:5000');
+    return apiUrl;
+};
 
 export const useChat = (workspaceId, projectId = null) => {
     const [messages, setMessages] = useState([]);
@@ -11,7 +17,7 @@ export const useChat = (workspaceId, projectId = null) => {
 
     useEffect(() => {
         // Initialize socket connection with better configuration
-        socketRef.current = io('http://localhost:5000', {
+        socketRef.current = io(getSocketUrl(), {
             transports: ['polling', 'websocket'],
             upgrade: true,
             rememberUpgrade: false,
@@ -80,12 +86,10 @@ export const useChat = (workspaceId, projectId = null) => {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const params = projectId ? { projectId } : { workspaceId };
 
-            const { data } = await axios.get('http://localhost:5000/api/messages', {
-                params,
-                headers: { Authorization: `Bearer ${token}` }
+            const { data } = await api.get('/api/messages', {
+                params
             });
 
             setMessages(data);
@@ -98,15 +102,11 @@ export const useChat = (workspaceId, projectId = null) => {
 
     const sendMessage = async (content, attachments = []) => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-
-            await axios.post('http://localhost:5000/api/messages', {
+            await api.post('/api/messages', {
                 content,
                 workspaceId,
                 projectId,
                 attachments
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
         } catch (error) {
             console.error('Error sending message:', error);
@@ -115,11 +115,7 @@ export const useChat = (workspaceId, projectId = null) => {
 
     const deleteMessage = async (messageId) => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-
-            await axios.delete(`http://localhost:5000/api/messages/${messageId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/messages/${messageId}`);
         } catch (error) {
             console.error('Error deleting message:', error);
         }

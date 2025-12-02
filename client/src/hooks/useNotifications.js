@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import io from 'socket.io-client';
+
+// Get socket URL from the same base as API
+const getSocketUrl = () => {
+    const apiUrl = api.defaults.baseURL || (import.meta.env.PROD ? 'https://syncspace-fbys.onrender.com' : 'http://localhost:5000');
+    return apiUrl;
+};
 
 const useNotifications = () => {
     const [notifications, setNotifications] = useState([]);
@@ -8,7 +14,7 @@ const useNotifications = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:5000', {
+        const newSocket = io(getSocketUrl(), {
             transports: ['polling', 'websocket'],
             upgrade: true,
             rememberUpgrade: false,
@@ -41,10 +47,7 @@ const useNotifications = () => {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            const { data } = await axios.get('http://localhost:5000/api/notifications', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data } = await api.get('/api/notifications');
             setNotifications(data);
             setLoading(false);
         } catch (error) {
@@ -72,10 +75,7 @@ const useNotifications = () => {
 
     const markAsRead = async (id) => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.put(`/api/notifications/${id}/read`);
 
             if (id === 'all') {
                 setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -91,10 +91,7 @@ const useNotifications = () => {
 
     const deleteNotification = async (id) => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            await axios.delete(`http://localhost:5000/api/notifications/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/notifications/${id}`);
             setNotifications(prev => prev.filter(n => n._id !== id));
         } catch (error) {
             console.error('Error deleting notification:', error);

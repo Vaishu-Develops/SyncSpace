@@ -14,7 +14,7 @@ const useFavorites = () => {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
-            const { data } = await axios.get('http://localhost:5000/api/favorites', config);
+            const { data } = await api.get('/api/favorites');
 
             // Create a Set of favorite item IDs for quick lookup
             const favoriteIds = new Set();
@@ -37,7 +37,7 @@ const useFavorites = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             const { data } = await axios.post(
-                'http://localhost:5000/api/favorites/toggle',
+                '/api/favorites/toggle',
                 { itemType, itemId },
                 config
             );

@@ -36,7 +36,7 @@ const EnhancedDashboard = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const { data } = await axios.get('http://localhost:5000/api/workspaces', config);
+            const { data } = await api.get('/api/workspaces');
             setWorkspaces(data);
         } catch (error) {
             console.error('Error fetching workspaces:', error);
@@ -51,7 +51,7 @@ const EnhancedDashboard = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const { data } = await axios.get('http://localhost:5000/api/projects', config);
+            const { data } = await api.get('/api/projects');
             setProjects(data);
         } catch (error) {
             console.error('Error fetching projects:', error);
@@ -64,7 +64,7 @@ const EnhancedDashboard = () => {
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.delete(`http://localhost:5000/api/workspaces/${workspaceId}`, config);
+            await api.delete(`/api/workspaces/${workspaceId}`);
             fetchWorkspaces();
         } catch (error) {
             console.error('Error deleting workspace:', error);

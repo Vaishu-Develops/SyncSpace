@@ -22,7 +22,7 @@ const WorkspaceOverview = () => {
             setLoading(true);
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const response = await axios.get(
-                `http://localhost:5000/api/projects?workspaceId=${workspaceId}`,
+                `/api/projects?workspaceId=${workspaceId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setProjects(response.data);
@@ -40,7 +40,7 @@ const WorkspaceOverview = () => {
 
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            await axios.post('http://localhost:5000/api/projects', {
+            await api.post('/api/projects', {
                 name,
                 description,
                 workspaceId
@@ -61,7 +61,7 @@ const WorkspaceOverview = () => {
 
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
-            await axios.put(`http://localhost:5000/api/projects/${project._id}`, {
+            await api.put(`/api/projects/${project._id}`, {
                 name,
                 description
             }, { headers: { Authorization: `Bearer ${token}` } });

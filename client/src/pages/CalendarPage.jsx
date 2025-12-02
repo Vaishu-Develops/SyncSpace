@@ -20,7 +20,7 @@ const CalendarPage = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             // Fetch all user's tasks
-            const { data } = await axios.get('http://localhost:5000/api/tasks/my-tasks', config);
+            const { data } = await api.get('/api/tasks/my-tasks');
             setTasks(data.filter(task => task.dueDate)); // Only tasks with due dates
         } catch (error) {
             console.error('Error fetching tasks:', error);

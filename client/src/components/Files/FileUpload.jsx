@@ -54,7 +54,7 @@ const FileUpload = ({ workspaceId, projectId, onUploadComplete }) => {
                 formData.append('workspaceId', workspaceId);
                 if (projectId) formData.append('projectId', projectId);
 
-                await axios.post('http://localhost:5000/api/files', formData, {
+                await api.post('/api/files', formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'

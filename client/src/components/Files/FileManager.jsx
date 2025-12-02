@@ -18,7 +18,7 @@ const FileManager = ({ workspaceId, projectId = null }) => {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const params = projectId ? { projectId } : { workspaceId };
 
-            const { data } = await axios.get('http://localhost:5000/api/files', {
+            const { data } = await api.get('/api/files', {
                 params,
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -35,7 +35,7 @@ const FileManager = ({ workspaceId, projectId = null }) => {
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
 
-            const response = await axios.get(`http://localhost:5000/api/files/${fileId}/download`, {
+            const response = await api.get(`/api/files/${fileId}/download`, {
                 headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob'
             });

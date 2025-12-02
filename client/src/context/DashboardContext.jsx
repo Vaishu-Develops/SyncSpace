@@ -36,7 +36,7 @@ export const DashboardProvider = ({ children }) => {
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const { data } = await axios.get('http://localhost:5000/api/workspaces', config);
+            const { data } = await api.get('/api/workspaces');
 
             const pinned = data.filter(workspace =>
                 workspace.pinnedBy && workspace.pinnedBy.includes(user._id)
@@ -53,7 +53,7 @@ export const DashboardProvider = ({ children }) => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             // Fetch tasks assigned to user
-            const tasksRes = await axios.get('http://localhost:5000/api/tasks/my-tasks', config);
+            const tasksRes = await api.get('/api/tasks/my-tasks');
 
             // Fetch projects (we'll filter for recent ones on frontend for now or update API later)
             // For now, let's just use tasks as "Recently Viewed" since they are most granular
@@ -79,7 +79,7 @@ export const DashboardProvider = ({ children }) => {
         try {
             const token = JSON.parse(localStorage.getItem('userInfo')).token;
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.put(`http://localhost:5000/api/workspaces/${workspaceId}/pin`, {}, config);
+            await api.put(`/api/workspaces/${workspaceId}/pin`);
 
             // Refresh pinned workspaces immediately
             await fetchPinnedWorkspaces();

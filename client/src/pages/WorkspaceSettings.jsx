@@ -51,7 +51,7 @@ const WorkspaceSettings = () => {
                 },
             };
             const { data } = await axios.put(
-                `http://localhost:5000/api/workspaces/${workspaceId}`,
+                `/api/workspaces/${workspaceId}`,
                 formData,
                 config
             );

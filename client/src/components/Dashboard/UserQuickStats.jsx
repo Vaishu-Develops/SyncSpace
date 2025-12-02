@@ -22,7 +22,7 @@ const UserQuickStats = () => {
                 };
 
                 const [tasksRes, projectsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/tasks/my-tasks', config),
+                    api.get('/api/tasks/my-tasks'),
                     axios.get('http://localhost:5000/api/projects', config)
                 ]);
 
