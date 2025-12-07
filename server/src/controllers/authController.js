@@ -77,9 +77,9 @@ const updateUserProfile = async (req, res) => {
             }
 
             if (req.file) {
-                // Construct the file URL (adjust based on your server setup)
-                // Assuming static files are served from /uploads
-                const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+                // Construct the file URL using environment variable for API base URL
+                const apiBaseUrl = process.env.API_URL || `${req.protocol}://${req.get('host')}`;
+                const fileUrl = `${apiBaseUrl}/uploads/${req.file.filename}`;
                 user.avatar = fileUrl;
             }
 

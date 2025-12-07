@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { getAvatarUrl } from '../../utils/avatarHelper';
 
 /**
  * Avatar Component
@@ -58,9 +59,13 @@ const Avatar = ({
         <div className={`relative inline-block rounded-full ${className}`}>
             {src ? (
                 <img
-                    src={src}
+                    src={getAvatarUrl(src)}
                     alt={alt || name}
                     className={`${sizes[size]} rounded-full object-cover`}
+                    onError={(e) => {
+                        console.error('Failed to load avatar:', src);
+                        e.target.style.display = 'none';
+                    }}
                 />
             ) : (
                 <div

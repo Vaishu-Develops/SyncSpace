@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ArrowRight, Zap, Shield, Globe, Layers, Cpu, Users } from 'lucide-react';
 import { Button } from '../components/ui';
 import Logo from '../components/Logo';
@@ -36,40 +37,65 @@ const LandingPage = () => {
             {/* Hero Section */}
             <section className="relative z-10 pt-20 pb-32 lg:pt-32 lg:pb-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
-                        <span className="flex h-2 w-2 rounded-full bg-primary"></span>
-                        <span className="text-sm font-medium text-gray-300">v2.0 is now live</span>
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8"
+                    >
+                        <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_rgba(6,182,212,0.8)]"></span>
+                        <span className="text-sm font-medium text-gray-300 tracking-wide font-sans">v2.0 IS LIVE</span>
+                    </motion.div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500 animate-fade-in">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-gray-500 font-display"
+                    >
                         Collaborate in the <br />
-                        <span className="text-primary">Future of Work</span>
-                    </h1>
+                        <span className="text-primary drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">Future of Work</span>
+                    </motion.h1>
 
-                    <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10 animate-fade-in-up delay-200">
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10"
+                    >
                         Experience seamless project management with AI-driven insights, real-time collaboration, and a workspace designed for high-performance teams.
-                    </p>
+                    </motion.p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up delay-300">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                    >
                         <Link to="/register">
-                            <Button size="lg" className="w-full sm:w-auto min-w-[160px] shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300">
+                            <Button size="lg" className="w-full sm:w-auto min-w-[160px] shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 border border-primary/20">
                                 Start for Free <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
                         <a href="#features" className="w-full sm:w-auto">
-                            <Button variant="secondary" size="lg" className="w-full min-w-[160px] bg-white/5 border-white/10 hover:bg-white/10 backdrop-blur-sm">
+                            <Button variant="secondary" size="lg" className="w-full min-w-[160px] bg-white/5 border-white/10 hover:bg-white/10 backdrop-blur-sm hover:border-primary/50 transition-all duration-300">
                                 Explore Features
                             </Button>
                         </a>
-                    </div>
+                    </motion.div>
 
                     {/* Hero Image / Dashboard Preview */}
-                    <div className="mt-20 relative mx-auto max-w-6xl animate-fade-in-up delay-500 perspective-1000">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40, rotateX: 10 }}
+                        animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                        className="mt-20 relative mx-auto max-w-6xl perspective-1000"
+                    >
                         {/* Glow Effects */}
                         <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-3xl blur-2xl opacity-40 animate-pulse-slow"></div>
 
                         {/* Main Dashboard Container */}
-                        <div className="relative rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-2xl transform rotate-x-12 hover:rotate-x-0 transition-transform duration-700 ease-out">
+                        <div className="relative rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-2xl transform transition-transform duration-700 ease-out hover:scale-[1.01] hover:shadow-[0_0_40px_rgba(6,182,212,0.2)]">
                             {/* Window Controls */}
                             <div className="h-10 border-b border-white/5 bg-white/5 flex items-center px-4 gap-2">
                                 <div className="flex gap-2">
@@ -140,24 +166,27 @@ const LandingPage = () => {
                                         <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent"></div>
                                         <div className="flex items-end justify-between h-full gap-2 px-4 pb-4">
                                             {[40, 65, 45, 80, 55, 70, 45, 60, 75, 50, 65, 85].map((h, i) => (
-                                                <div
+                                                <motion.div
                                                     key={i}
-                                                    className="w-full bg-gradient-to-t from-primary/50 to-secondary/50 rounded-t-sm transition-all duration-1000 hover:opacity-80"
-                                                    style={{ height: `${h}%` }}
-                                                ></div>
+                                                    initial={{ height: 0 }}
+                                                    whileInView={{ height: `${h}%` }}
+                                                    transition={{ duration: 1, delay: i * 0.05 }}
+                                                    viewport={{ once: true }}
+                                                    className="w-full bg-gradient-to-t from-primary/50 to-secondary/50 rounded-t-sm transition-all duration-1000 hover:opacity-80 hover:shadow-[0_0_10px_rgba(6,182,212,0.5)]"
+                                                ></motion.div>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
             <section className="relative z-10 py-24 bg-slate-950/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to ship faster</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">Everything you need to ship faster</h2>
                         <p className="text-gray-400 max-w-2xl mx-auto">
                             Powerful features integrated into a unified platform. Stop switching between apps and start getting work done.
                         </p>
@@ -201,21 +230,28 @@ const LandingPage = () => {
             {/* CTA Section */}
             <section className="relative z-10 py-24">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="relative rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 p-12 overflow-hidden">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/5 blur-3xl"></div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="relative rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 p-12 overflow-hidden group"
+                    >
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-colors duration-500"></div>
+                        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20"></div>
 
-                        <h2 className="relative text-3xl md:text-4xl font-bold mb-6">
+                        <h2 className="relative text-3xl md:text-4xl font-bold mb-6 font-display">
                             Ready to transform your workflow?
                         </h2>
                         <p className="relative text-gray-400 mb-8 max-w-xl mx-auto">
                             Join thousands of teams who have switched to SyncSpace for a better, faster, and more collaborative workspace.
                         </p>
                         <Link to="/register" className="relative inline-block">
-                            <Button size="lg" className="shadow-xl shadow-primary/20 hover:shadow-primary/40">
+                            <Button size="lg" className="shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300">
                                 Get Started Now
                             </Button>
                         </Link>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -243,15 +279,23 @@ const LandingPage = () => {
 };
 
 const FeatureCard = ({ icon, title, description }) => (
-    <div className="group p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
-        <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ y: -5, scale: 1.02 }}
+        className="group p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/30 transition-all duration-300 relative overflow-hidden"
+    >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 relative z-10 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]">
             {icon}
         </div>
-        <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-primary transition-colors">{title}</h3>
-        <p className="text-gray-400 leading-relaxed">
+        <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-primary transition-colors relative z-10 font-display">{title}</h3>
+        <p className="text-gray-400 leading-relaxed relative z-10">
             {description}
         </p>
-    </div>
+    </motion.div>
 );
 
 export default LandingPage;

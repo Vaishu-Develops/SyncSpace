@@ -56,7 +56,12 @@ export const AuthProvider = ({ children }) => {
             const { data } = await api.get('/api/auth/profile');
             
             // Update user data with fresh info from server
-            const updatedUserInfo = { ...user, ...data };
+            const updatedUserInfo = { 
+                ...user, 
+                ...data,
+                // Ensure avatar is preserved and properly formatted
+                avatar: data.avatar || user.avatar || ''
+            };
             setUser(updatedUserInfo);
             localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
             
