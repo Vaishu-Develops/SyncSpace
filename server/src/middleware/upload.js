@@ -24,13 +24,12 @@ const storage = multer.diskStorage({
 
 // File filter
 const fileFilter = (req, file, cb) => {
-    // Accept all files for now, but you can add restrictions
-    // Example: only images
-    // if (file.mimetype.startsWith('image/')) {
-    //     cb(null, true);
-    // } else {
-    //     cb(new Error('Only images are allowed'), false);
-    // }
+    console.log('File being uploaded:', {
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size
+    });
     cb(null, true);
 };
 

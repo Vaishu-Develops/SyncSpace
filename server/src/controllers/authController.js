@@ -76,14 +76,16 @@ const updateUserProfile = async (req, res) => {
                 user.password = req.body.password;
             }
 
+            // Only update avatar if a file was uploaded
             if (req.file) {
-                // Construct the file URL using environment variable for API base URL
                 const apiBaseUrl = process.env.API_URL || `${req.protocol}://${req.get('host')}`;
                 const fileUrl = `${apiBaseUrl}/uploads/${req.file.filename}`;
                 user.avatar = fileUrl;
+                console.log('Avatar updated:', fileUrl);
             }
 
             const updatedUser = await user.save();
+            console.log('User saved with avatar:', updatedUser.avatar);
 
             res.json({
                 _id: updatedUser._id,
@@ -97,6 +99,7 @@ const updateUserProfile = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
+        console.error('Error updating profile:', error);
         res.status(500).json({ message: error.message });
     }
 };
