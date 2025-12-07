@@ -24,10 +24,10 @@ const Button = ({
     const baseStyles = 'inline-flex items-center justify-center font-bold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
 
     const variants = {
-        primary: 'text-white bg-gradient-to-r from-cyan-400 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30 hover:shadow-fuchsia-500/50 hover:brightness-110 focus:ring-fuchsia-500 border border-white/10',
-        secondary: 'bg-slate-800 border border-slate-700 text-white hover:bg-slate-700 hover:border-fuchsia-500 focus:ring-fuchsia-500',
-        outline: 'bg-transparent border-2 border-fuchsia-500 text-fuchsia-400 hover:bg-fuchsia-500/10 hover:text-fuchsia-300 focus:ring-fuchsia-500',
-        ghost: 'bg-transparent text-gray-400 hover:bg-slate-800 hover:text-white focus:ring-slate-700',
+        primary: 'text-white bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] hover:scale-105 active:scale-95 border border-cyan-400/50 hover:border-cyan-300 transition-all duration-300 font-bold tracking-wide',
+        secondary: 'bg-slate-900/80 border border-slate-700 text-white hover:bg-slate-800 hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] focus:ring-cyan-400 backdrop-blur-sm',
+        outline: 'bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 hover:text-cyan-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] focus:ring-cyan-400',
+        ghost: 'bg-transparent text-gray-400 hover:bg-white/5 hover:text-white focus:ring-slate-700',
         danger: 'bg-danger text-white shadow-glow-danger hover:opacity-90 hover:shadow-glow-danger focus:ring-danger',
     };
 

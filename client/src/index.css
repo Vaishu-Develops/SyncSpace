@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
 
 @theme {
   --color-primary: #06B6D4;
@@ -35,7 +36,6 @@
   --animate-shimmer: shimmer 2s linear infinite;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap');
 
 /* Configure class-based dark mode */
 @variant dark (&:where(.dark, .dark *));
