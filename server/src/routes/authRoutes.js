@@ -8,8 +8,9 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', authUser);
 router.get('/profile', protect, getUserProfile);
-// Use Cloudinary upload for avatar, fallback to local upload if Cloudinary not configured
-const avatarUpload = process.env.CLOUDINARY_CLOUD_NAME ? uploadToCloudinary : upload;
+// Use Cloudinary upload for avatar if configured, fallback to local upload
+const useCloudinary = process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME;
+const avatarUpload = useCloudinary ? uploadToCloudinary : upload;
 router.put('/profile', protect, avatarUpload.single('avatar'), updateUserProfile);
 
 module.exports = router;
