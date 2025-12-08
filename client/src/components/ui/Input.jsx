@@ -7,6 +7,7 @@ import { Eye, EyeOff, X } from 'lucide-react';
  * Types: text, email, password, number, date
  * States: default, focus, error, disabled
  * Features: label, helper text, error message, icon, clear button
+ * Variants: default, glass
  */
 
 const Input = ({
@@ -22,6 +23,7 @@ const Input = ({
     icon,
     showClearButton = false,
     className = '',
+    variant = 'default',
     ...props
 }) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +38,13 @@ const Input = ({
             onChange({ target: { value: '' } });
         }
     };
+
+    const variants = {
+        default: 'bg-slate-800 border-slate-700 focus:ring-primary',
+        glass: 'bg-white/5 border-white/10 focus:border-cyan-400/50 focus:ring-cyan-400/20 placeholder-gray-400 hover:bg-white/10'
+    };
+
+    const baseStyles = 'block w-full px-4 py-2 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
 
     return (
         <div className={`w-full ${className}`}>
@@ -59,17 +68,16 @@ const Input = ({
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     className={`
-                        block w-full px-4 py-2 bg-slate-800 border rounded-lg text-white placeholder-gray-500
-                        focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200
-                        disabled:opacity-50 disabled:cursor-not-allowed
+                        ${baseStyles}
                         ${icon ? 'pl-10' : ''}
                         ${showClearButton || type === 'password' ? 'pr-10' : ''}
                         ${error
                             ? 'border-danger focus:ring-danger'
                             : isFocused
-                                ? 'border-primary focus:ring-primary shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-                                : 'border-slate-700 focus:ring-primary'
+                                ? variant === 'glass' ? 'border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'border-primary shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                                : variants[variant]
                         }
+                        ${!error && !isFocused ? variants[variant] : ''}
                     `}
                     {...props}
                 />
@@ -121,6 +129,7 @@ Input.propTypes = {
     icon: PropTypes.node,
     showClearButton: PropTypes.bool,
     className: PropTypes.string,
+    variant: PropTypes.oneOf(['default', 'glass']),
 };
 
 export default Input;
