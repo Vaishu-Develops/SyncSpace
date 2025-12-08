@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 import { getAvatarUrl } from '../../utils/avatarHelper';
 
 /**
@@ -16,6 +17,7 @@ const Avatar = ({
     status,
     className = '',
 }) => {
+    const [imageError, setImageError] = React.useState(false);
     const sizes = {
         xs: 'h-6 w-6 text-xs',
         sm: 'h-8 w-8 text-sm',
@@ -57,17 +59,19 @@ const Avatar = ({
 
     return (
         <div className={`relative inline-block rounded-full ${className}`}>
-            {src ? (
+            {src && !imageError ? (
                 <img
                     src={getAvatarUrl(src)}
                     alt={alt || name}
                     className={`${sizes[size]} rounded-full object-cover`}
                     onError={(e) => {
                         console.error('Failed to load avatar:', src);
+                        setImageError(true);
                         e.target.style.display = 'none';
                     }}
                 />
-            ) : (
+            ) : null}
+            {(!src || imageError) && (
                 <div
                     className={`${sizes[size]} rounded-full bg-gradient-to-br ${getColorFromName(name)} flex items-center justify-center text-white font-semibold`}
                 >
