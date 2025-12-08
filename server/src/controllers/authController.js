@@ -78,10 +78,17 @@ const updateUserProfile = async (req, res) => {
 
             // Only update avatar if a file was uploaded
             if (req.file) {
-                const apiBaseUrl = process.env.API_URL || `${req.protocol}://${req.get('host')}`;
-                const fileUrl = `${apiBaseUrl}/uploads/${req.file.filename}`;
-                user.avatar = fileUrl;
-                console.log('Avatar updated:', fileUrl);
+                // Check if using Cloudinary (file.path contains cloudinary URL)
+                if (req.file.path && req.file.path.includes('cloudinary')) {
+                    user.avatar = req.file.path; // Cloudinary URL
+                    console.log('Avatar uploaded to Cloudinary:', req.file.path);
+                } else {
+                    // Local file upload
+                    const apiBaseUrl = process.env.API_URL || `${req.protocol}://${req.get('host')}`;
+                    const fileUrl = `${apiBaseUrl}/uploads/${req.file.filename}`;
+                    user.avatar = fileUrl;
+                    console.log('Avatar uploaded locally:', fileUrl);
+                }
             }
 
             const updatedUser = await user.save();
